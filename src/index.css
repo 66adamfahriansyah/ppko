@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+@layer base {
+  body {
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    @apply bg-[#f3f6f3] text-gray-800;
+  }
+}
+
+/* Custom styles not easily done or cleaner as classes */
+.border-start-custom-success {
+  border-left: 6px solid #2e7d32;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
