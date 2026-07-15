@@ -1,6 +1,7 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Navbar({ user, onLogout, onToggleSidebar }) {
+  const navigate = useNavigate();
   const location = useLocation();
   const isTrends = location.pathname === '/trends';
   
@@ -25,9 +26,11 @@ function Navbar({ user, onLogout, onToggleSidebar }) {
           <span className="font-semibold text-gray-800 text-base">
             {location.pathname === '/admin' ? 'Monitoring Area' : 
              location.pathname === '/admin/trends' ? 'Tren & Analitik' : 
+             location.pathname === '/admin/toko' ? 'Kelola Toko Saya' :
              location.pathname === '/admin/manual-control' ? 'Kendali Manual' :
              location.pathname === '/admin/education' ? 'Materi Edukasi' : 
              location.pathname === '/admin/cms' ? 'Kelola Website (CMS)' : 'Pengaturan Sistem'}
+
           </span>
         </div>
       </div>
@@ -67,10 +70,21 @@ function Navbar({ user, onLogout, onToggleSidebar }) {
 
         {/* Profile Widget */}
         <div className="flex items-center pl-2 border-l border-gray-200">
-          <div className="rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 mr-2 w-8 h-8 flex items-center justify-center font-bold text-xs">
-            {firstLetter}
-          </div>
-          <span className="text-xs font-bold text-gray-700 hidden lg:inline capitalize">{user?.username} ({user?.role})</span>
+          {user ? (
+            <>
+              <div className="rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 mr-2 w-8 h-8 flex items-center justify-center font-bold text-xs">
+                {firstLetter}
+              </div>
+              <span className="text-xs font-bold text-gray-700 hidden lg:inline capitalize">{user?.username} ({user?.role})</span>
+            </>
+          ) : (
+            <button 
+              onClick={() => navigate('/login', { state: { from: 'monitoring' } })}
+              className="text-xs font-bold text-[#0b5924] hover:text-[#073c18] transition-colors"
+            >
+              Masuk
+            </button>
+          )}
         </div>
       </div>
     </header>
@@ -78,3 +92,5 @@ function Navbar({ user, onLogout, onToggleSidebar }) {
 }
 
 export default Navbar;
+
+

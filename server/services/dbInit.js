@@ -14,9 +14,38 @@ export async function initializeDatabase() {
         email VARCHAR(100) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         role VARCHAR(50) DEFAULT 'user',
+        nama_lengkap VARCHAR(255) NULL,
+        no_telp VARCHAR(20) NULL,
+        asal_poktan VARCHAR(255) NULL,
+        alamat VARCHAR(255) NULL,
+        jenis_kelamin VARCHAR(20) NULL,
+        is_verified TINYINT(1) DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    // Tambah kolom ke tabel users jika belum ada (backward compatibility)
+    try {
+      await connection.query('ALTER TABLE users ADD COLUMN nama_lengkap VARCHAR(255) NULL');
+    } catch (e) { /* ignore if column exists */ }
+    try {
+      await connection.query('ALTER TABLE users ADD COLUMN no_telp VARCHAR(20) NULL');
+    } catch (e) { /* ignore if column exists */ }
+    try {
+      await connection.query('ALTER TABLE users ADD COLUMN asal_poktan VARCHAR(255) NULL');
+    } catch (e) { /* ignore if column exists */ }
+    try {
+      await connection.query('ALTER TABLE users ADD COLUMN alamat VARCHAR(255) NULL');
+    } catch (e) { /* ignore if column exists */ }
+    try {
+      await connection.query('ALTER TABLE users ADD COLUMN jenis_kelamin VARCHAR(20) NULL');
+    } catch (e) { /* ignore if column exists */ }
+    try {
+      await connection.query('ALTER TABLE users ADD COLUMN is_verified TINYINT(1) DEFAULT 0');
+    } catch (e) { /* ignore if column exists */ }
+
+
+
 
     // Buat tabel manual_logs jika belum ada
     await connection.query(`
@@ -30,6 +59,25 @@ export async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+    
+    // Buat tabel products jika belum ada (e-commerce anggota tani)
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS products (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        address VARCHAR(255) NOT NULL,
+        contact VARCHAR(20) NOT NULL,
+        price VARCHAR(50) DEFAULT '0',
+        image VARCHAR(500) DEFAULT '',
+        is_active TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
     
     // Seed default logs jika tabel manual_logs kosong
     const [logRows] = await connection.query('SELECT COUNT(*) as count FROM manual_logs');

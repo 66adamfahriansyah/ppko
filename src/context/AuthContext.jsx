@@ -14,15 +14,20 @@ export function AuthContextProvider({ children }) {
     setCheckingAuth(false);
   }, []);
 
-  const loginUser = (userData) => {
+  const loginUser = (userData, token) => {
     localStorage.setItem('user', JSON.stringify(userData));
+    if (token) {
+      localStorage.setItem('token', token);
+    }
     setUser(userData);
   };
 
   const logoutUser = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     setUser(null);
   };
+
 
   return (
     <AuthContext.Provider value={{ user, checkingAuth, loginUser, logoutUser }}>

@@ -51,16 +51,32 @@ function Home() {
           <button onClick={() => scrollToSection('about')} className="hover:text-emerald-700 transition">Tentang Kami</button>
         </nav>
 
-        <button 
-          onClick={() => navigate('/login')}
-          className="bg-[#0b5924] hover:bg-[#073c18] text-white px-5 py-2.5 rounded-full text-xs font-bold transition shadow-sm hover:shadow-md cursor-pointer flex items-center gap-1.5"
-        >
-          <i className="bi bi-person-fill"></i> Masuk Dashboard
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => navigate('/admin')}
+            className="border border-[#0b5924] text-[#0b5924] hover:bg-emerald-50 px-4 py-2.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+          >
+            <i className="bi bi-cpu-fill"></i> Monitor Lahan
+          </button>
+          <button 
+            onClick={() => navigate('/login')}
+            className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
+          >
+            <i className="bi bi-box-arrow-in-right"></i> Masuk
+          </button>
+          <button 
+            onClick={() => navigate('/register')}
+            className="bg-[#0b5924] hover:bg-[#073c18] text-white px-5 py-2.5 rounded-full text-xs font-bold transition shadow-sm hover:shadow-md cursor-pointer flex items-center gap-1.5"
+          >
+            <i className="bi bi-person-plus-fill"></i> Daftar
+          </button>
+
+        </div>
       </header>
 
+
       {/* 2. HERO SECTION */}
-      <section 
+      <section
         id="home"
         className="relative min-h-[85vh] flex items-center justify-center bg-cover bg-center py-20 px-6 text-center text-white"
         style={{ backgroundImage: `linear-gradient(to bottom, rgba(11, 89, 36, 0.75), rgba(6, 64, 26, 0.9)), url(${cmsData.hero.bgImage})` }}
@@ -76,13 +92,13 @@ function Home() {
             {cmsData.hero.subtitle}
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
-            <button 
+            <button
               onClick={() => scrollToSection('komoditas')}
               className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3.5 rounded-2xl text-sm font-bold transition shadow-md cursor-pointer"
             >
               Lihat Hasil Panen
             </button>
-            <button 
+            <button
               onClick={() => scrollToSection('marketplace')}
               className="w-full sm:w-auto border-2 border-white/80 hover:bg-white hover:text-emerald-900 text-white px-8 py-3.5 rounded-2xl text-sm font-bold transition cursor-pointer"
             >
@@ -104,13 +120,13 @@ function Home() {
               <h2 className="text-3xl font-extrabold text-emerald-950">Komoditas Utama Bawang Merah</h2>
             </div>
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 onClick={() => scrollCarousel('left')}
                 className="w-10 h-10 bg-white hover:bg-emerald-50 text-emerald-800 rounded-full flex items-center justify-center shadow-sm border border-gray-150 transition cursor-pointer"
               >
                 <i className="bi bi-chevron-left"></i>
               </button>
-              <button 
+              <button
                 onClick={() => scrollCarousel('right')}
                 className="w-10 h-10 bg-white hover:bg-emerald-50 text-emerald-800 rounded-full flex items-center justify-center shadow-sm border border-gray-150 transition cursor-pointer"
               >
@@ -119,21 +135,21 @@ function Home() {
             </div>
           </div>
 
-          <div 
+          <div
             ref={carouselRef}
             className="flex gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory pb-4"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {cmsData.komoditas.map((item) => (
-              <div 
-                key={item.id} 
+              <div
+                key={item.id}
                 className="min-w-[280px] md:min-w-[360px] bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between snap-start hover:shadow-md transition-all duration-300 group"
               >
                 <div className="relative h-56 overflow-hidden">
-                  <img 
-                    src={item.gambar} 
+                  <img
+                    src={item.gambar}
                     alt={item.bulan}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 bg-emerald-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase">
                     {item.kualitas}
@@ -172,8 +188,8 @@ function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {cmsData.marketplace.filter(prod => prod.status).map((prod) => (
-              <div 
-                key={prod.id} 
+              <div
+                key={prod.id}
                 className="bg-gray-50/50 border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div className="relative h-48 bg-gray-200">
@@ -187,14 +203,14 @@ function Home() {
                     <h3 className="text-base font-bold text-gray-800">{prod.nama}</h3>
                     <p className="text-xs text-gray-500 leading-relaxed line-clamp-3">{prod.deskripsi}</p>
                   </div>
-                  
+
                   <div className="space-y-4 pt-3 border-t border-gray-100">
                     <div className="flex items-center text-xs text-gray-400 font-semibold gap-1.5">
                       <i className="bi bi-person text-base text-emerald-600"></i>
                       <span>{prod.petani}</span>
                     </div>
 
-                    <a 
+                    <a
                       href={`https://wa.me/${prod.whatsapp}?text=Halo%20${encodeURIComponent(prod.petani)},%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(prod.nama)}%20di%20Website%20E-BIO%20PENS.`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -213,7 +229,7 @@ function Home() {
       {/* 5. ABOUT & CONTACT SECTION */}
       <section id="about" className="py-20 px-6 md:px-12 bg-emerald-50/20 border-t border-emerald-50/50">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
+
           <div className="lg:col-span-6 space-y-6">
             <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1">Tentang Kelompok Tani</span>
             <h2 className="text-3xl font-extrabold text-emerald-950 leading-tight">Mewujudkan Kemandirian Pertanian Modern</h2>
@@ -235,7 +251,7 @@ function Home() {
             <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
               <i className="bi bi-telephone-fill text-emerald-600"></i> Kontak Pengelola Lahan
             </h3>
-            
+
             <div className="space-y-4">
               {cmsData.about.kontak.map((contact) => (
                 <div key={contact.id} className="p-4 bg-gray-50 rounded-2xl space-y-2 border border-gray-100">
@@ -244,7 +260,7 @@ function Home() {
                     <p><strong className="text-gray-700">Ketua:</strong> {contact.ketua}</p>
                     <p className="flex items-start gap-1"><i className="bi bi-geo-alt-fill text-emerald-700 mt-0.5"></i> {contact.alamat}</p>
                   </div>
-                  <a 
+                  <a
                     href={`https://wa.me/${contact.telepon}?text=Halo%20${encodeURIComponent(contact.ketua)},%20saya%20ingin%20bertanya%20mengenai%20lahan%20pertanian%20bawang%20merah%20Sajen.`}
                     target="_blank"
                     rel="noopener noreferrer"

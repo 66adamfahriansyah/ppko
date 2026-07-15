@@ -3,10 +3,13 @@ const BASE_URL = `http://${hostname}:3001/api`;
 
 export async function request(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
+  const token = localStorage.getItem('token');
   const headers = {
     'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     ...options.headers,
   };
+
 
   const response = await fetch(url, {
     ...options,

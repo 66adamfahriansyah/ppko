@@ -5,6 +5,8 @@ import { initializeDatabase } from './services/dbInit.js';
 import authRoutes from './routes/authRoutes.js';
 import monitoringRoutes from './routes/monitoringRoutes.js';
 import logsRoutes from './routes/logsRoutes.js';
+import productRoutes from './routes/productRoutes.js';
+import errorHandler from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -22,6 +24,10 @@ initializeDatabase();
 app.use('/api/auth', authRoutes);
 app.use('/api/monitoring', monitoringRoutes);
 app.use('/api/logs', logsRoutes);
+app.use('/api/products', productRoutes);
+
+// Error Handler
+app.use(errorHandler);
 
 // Start Server
 app.listen(PORT, () => {

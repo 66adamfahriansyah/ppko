@@ -1,17 +1,29 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { login, register } from '../services/authService';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-function LoginRegister() {
+function LoginRegister({ mode = 'login' }) {
   const { loginUser } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isLogin = mode === 'login';
+  const fromMonitoring = location.state?.from === 'monitoring';
+
+
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
+  const [namaLengkap, setNamaLengkap] = useState('');
+  const [noTelp, setNoTelp] = useState('');
+  const [asalPoktan, setAsalPoktan] = useState('');
+  const [alamat, setAlamat] = useState('');
+  const [jenisKelamin, setJenisKelamin] = useState('Laki-Laki');
   const [password, setPassword] = useState('');
   const [identity, setIdentity] = useState(''); // email or username for login
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
@@ -20,14 +32,24 @@ function LoginRegister() {
     setIsLoading(true);
 
     try {
-      const data = await register(username, email, password);
+      const data = await register(username, namaLengkap, noTelp, asalPoktan, alamat, jenisKelamin, password);
 
-      setSuccess('Registrasi berhasil! Silakan login.');
-      setIsLogin(true);
+      setSuccess('Registrasi berhasil! Mengalihkan ke halaman masuk...');
       // Reset fields
       setUsername('');
-      setEmail('');
+      setNamaLengkap('');
+      setNoTelp('');
+      setAsalPoktan('');
+      setAlamat('');
+      setJenisKelamin('Laki-Laki');
       setPassword('');
+
+
+      
+      // Auto-redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -45,12 +67,13 @@ function LoginRegister() {
       const data = await login(identity, password);
 
       setSuccess('Login berhasil!');
-      loginUser(data.user);
+      loginUser(data.user, data.token);
     } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
+
   };
 
   return (
@@ -69,21 +92,13 @@ function LoginRegister() {
           <p className="text-xs text-gray-500 font-medium mt-1">Sistem Monitoring & Kontrol Sawah Demplot</p>
         </div>
 
-        {/* Form Selection Tabs */}
-        <div className="flex bg-gray-50 p-1 rounded-2xl border border-gray-100 mb-6 text-xs font-bold">
-          <button 
-            onClick={() => { setIsLogin(true); setError(''); setSuccess(''); }}
-            className={`flex-1 py-3 rounded-xl transition-all ${isLogin ? 'bg-[#0b5924] text-white shadow-sm' : 'text-gray-500 hover:text-[#0b5924]'}`}
-          >
-            Masuk
-          </button>
-          <button 
-            onClick={() => { setIsLogin(false); setError(''); setSuccess(''); }}
-            className={`flex-1 py-3 rounded-xl transition-all ${!isLogin ? 'bg-[#0b5924] text-white shadow-sm' : 'text-gray-500 hover:text-[#0b5924]'}`}
-          >
-            Daftar
-          </button>
+        {/* Title Header */}
+        <div className="text-center mb-6">
+          <h3 className="text-lg font-extrabold text-emerald-950">
+            {isLogin ? 'Masuk ke Akun Anda' : 'Daftar Akun Baru'}
+          </h3>
         </div>
+
 
         {/* Feedback Messages */}
         {error && (
@@ -127,15 +142,23 @@ function LoginRegister() {
                   <i className="bi bi-lock-fill"></i>
                 </span>
                 <input 
-                  type="password" 
+                  type={showLoginPassword ? 'text' : 'password'} 
                   required
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium"
+                  className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-10 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowLoginPassword(prev => !prev)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-emerald-700 focus:outline-none cursor-pointer"
+                >
+                  <i className={`bi ${showLoginPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+                </button>
               </div>
             </div>
+
 
             <button 
               type="submit" 
@@ -156,12 +179,12 @@ function LoginRegister() {
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Username</label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
-                  <i className="bi bi-person-fill"></i>
+                  <i className="bi bi-person-badge-fill"></i>
                 </span>
                 <input 
                   type="text" 
                   required
-                  placeholder="username_baru"
+                  placeholder="Username Anda"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium"
@@ -170,19 +193,98 @@ function LoginRegister() {
             </div>
 
             <div>
-              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Email</label>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Nama Lengkap</label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
-                  <i className="bi bi-envelope-fill"></i>
+                  <i className="bi bi-person-fill"></i>
                 </span>
                 <input 
-                  type="email" 
+                  type="text" 
                   required
-                  placeholder="user@ebio.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Nama Lengkap Anda"
+                  value={namaLengkap}
+                  onChange={(e) => setNamaLengkap(e.target.value)}
                   className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium"
                 />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Nomor Telefon (WhatsApp)</label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                  <i className="bi bi-whatsapp"></i>
+                </span>
+                <input 
+                  type="tel" 
+                  required
+                  placeholder="628123456789"
+                  value={noTelp}
+                  onChange={(e) => setNoTelp(e.target.value)}
+                  className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Asal Poktan (Kelompok Tani)</label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+                  <i className="bi bi-geo-alt-fill"></i>
+                </span>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="Poktan Tani Sajen"
+                  value={asalPoktan}
+                  onChange={(e) => setAsalPoktan(e.target.value)}
+                  className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Alamat Lengkap</label>
+              <div className="relative">
+                <span className="absolute top-3.5 left-0 pl-3.5 text-gray-400">
+                  <i className="bi bi-geo-fill"></i>
+                </span>
+                <textarea 
+                  required
+                  placeholder="Alamat Lengkap Rumah / Lahan Anda"
+                  value={alamat}
+                  onChange={(e) => setAlamat(e.target.value)}
+                  rows="2"
+                  className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium resize-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Jenis Kelamin</label>
+              <div className="flex gap-4">
+                <label className={`flex-1 flex items-center justify-center gap-2 border rounded-xl py-3 px-4 text-xs font-semibold cursor-pointer transition-all ${jenisKelamin === 'Laki-Laki' ? 'border-[#0b5924] bg-emerald-50/30 text-emerald-800' : 'border-gray-150 bg-gray-50/30 text-gray-600 hover:border-emerald-600'}`}>
+                  <input 
+                    type="radio" 
+                    name="jenisKelamin" 
+                    value="Laki-Laki"
+                    checked={jenisKelamin === 'Laki-Laki'}
+                    onChange={(e) => setJenisKelamin(e.target.value)}
+                    className="accent-[#0b5924] w-4 h-4 cursor-pointer"
+                  />
+                  <span>Laki-Laki</span>
+                </label>
+                <label className={`flex-1 flex items-center justify-center gap-2 border rounded-xl py-3 px-4 text-xs font-semibold cursor-pointer transition-all ${jenisKelamin === 'Perempuan' ? 'border-[#0b5924] bg-emerald-50/30 text-emerald-800' : 'border-gray-150 bg-gray-50/30 text-gray-600 hover:border-emerald-600'}`}>
+                  <input 
+                    type="radio" 
+                    name="jenisKelamin" 
+                    value="Perempuan"
+                    checked={jenisKelamin === 'Perempuan'}
+                    onChange={(e) => setJenisKelamin(e.target.value)}
+                    className="accent-[#0b5924] w-4 h-4 cursor-pointer"
+                  />
+                  <span>Perempuan</span>
+                </label>
               </div>
             </div>
 
@@ -193,13 +295,20 @@ function LoginRegister() {
                   <i className="bi bi-lock-fill"></i>
                 </span>
                 <input 
-                  type="password" 
+                  type={showPassword ? 'text' : 'password'} 
                   required
                   placeholder="Minimal 6 karakter"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium"
+                  className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-10 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(prev => !prev)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-emerald-700 focus:outline-none cursor-pointer"
+                >
+                  <i className={`bi ${showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+                </button>
               </div>
             </div>
 
@@ -215,10 +324,41 @@ function LoginRegister() {
               )}
             </button>
           </form>
+
+
         )}
+
+        {/* Redirect toggle links */}
+        {!fromMonitoring && (
+          <div className="text-center mt-6 text-xs text-gray-500 font-medium border-t border-gray-100 pt-4">
+            {isLogin ? (
+              <>
+                Belum memiliki akun?{' '}
+                <button 
+                  onClick={() => { setError(''); setSuccess(''); navigate('/register'); }} 
+                  className="text-emerald-700 hover:text-emerald-800 font-bold underline cursor-pointer"
+                >
+                  Daftar di sini
+                </button>
+              </>
+            ) : (
+              <>
+                Sudah memiliki akun?{' '}
+                <button 
+                  onClick={() => { setError(''); setSuccess(''); navigate('/login'); }} 
+                  className="text-emerald-700 hover:text-emerald-800 font-bold underline cursor-pointer"
+                >
+                  Masuk di sini
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
       </div>
     </div>
   );
 }
 
 export default LoginRegister;
+

@@ -9,7 +9,9 @@ import Settings from './pages/Settings';
 import LoginRegister from './pages/LoginRegister';
 import Home from './pages/Home';
 import CmsAdmin from './pages/CmsAdmin';
+import MyShop from './pages/MyShop';
 import { AuthContextProvider, useAuth } from './context/AuthContext';
+
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -37,62 +39,101 @@ function AppContent() {
         <Route path="/" element={<Home />} />
         <Route 
           path="/login" 
-          element={!user ? <LoginRegister /> : <Navigate to="/admin" replace />} 
+          element={!user ? <LoginRegister mode="login" /> : <Navigate to="/admin" replace />} 
+        />
+        <Route 
+          path="/register" 
+          element={!user ? <LoginRegister mode="register" /> : <Navigate to="/admin" replace />} 
         />
 
-        {/* PROTECTED ADMIN ROUTES */}
+
+        {/* MONITORING & ADMIN LAYOUT ROUTE */}
         <Route 
           path="/admin" 
-          element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }
+          element={<MainLayout />}
         >
+          {/* Public Pages */}
           <Route index element={<Dashboard />} />
           <Route path="trends" element={<Trends />} />
+
+          {/* Protected Toko Page (For logged-in farmers/admins) */}
+          <Route 
+            path="toko" 
+            element={
+              <ProtectedRoute>
+                <MyShop />
+              </ProtectedRoute>
+            } 
+          />
+
+
+
+          {/* Protected Pages (Admin Only) */}
           <Route 
             path="manual-control" 
             element={
-              user?.role === 'admin' ? (
-                <ManualControl />
-              ) : (
-                <div className="bg-white p-8 rounded-2xl border border-gray-150 text-center text-sm font-bold text-red-500">
-                  <i className="bi bi-shield-lock-fill text-3xl block mb-2 text-red-400"></i>
-                  Akses Ditolak: Halaman ini hanya dapat diakses oleh Admin.
-                </div>
-              )
+              <ProtectedRoute>
+                {user?.role === 'admin' ? (
+                  <ManualControl />
+                ) : (
+                  <div className="bg-white p-8 rounded-2xl border border-gray-150 text-center text-sm font-bold text-red-500">
+                    <i className="bi bi-shield-lock-fill text-3xl block mb-2 text-red-400"></i>
+                    Akses Ditolak: Halaman ini hanya dapat diakses oleh Admin.
+                  </div>
+                )}
+              </ProtectedRoute>
             } 
           />
-          <Route path="education" element={<Education />} />
+          <Route 
+            path="education" 
+            element={
+              <ProtectedRoute>
+                {user?.role === 'admin' ? (
+                  <Education />
+                ) : (
+                  <div className="bg-white p-8 rounded-2xl border border-gray-150 text-center text-sm font-bold text-red-500">
+                    <i className="bi bi-shield-lock-fill text-3xl block mb-2 text-red-400"></i>
+                    Akses Ditolak: Halaman ini hanya dapat diakses oleh Admin.
+                  </div>
+                )}
+              </ProtectedRoute>
+            } 
+          />
           <Route 
             path="settings" 
             element={
-              user?.role === 'admin' ? (
-                <Settings />
-              ) : (
-                <div className="bg-white p-8 rounded-2xl border border-gray-150 text-center text-sm font-bold text-red-500">
-                  <i className="bi bi-shield-lock-fill text-3xl block mb-2 text-red-400"></i>
-                  Akses Ditolak: Halaman ini hanya dapat diakses oleh Admin.
-                </div>
-              )
+              <ProtectedRoute>
+                {user?.role === 'admin' ? (
+                  <Settings />
+                ) : (
+                  <div className="bg-white p-8 rounded-2xl border border-gray-150 text-center text-sm font-bold text-red-500">
+                    <i className="bi bi-shield-lock-fill text-3xl block mb-2 text-red-400"></i>
+                    Akses Ditolak: Halaman ini hanya dapat diakses oleh Admin.
+                  </div>
+                )}
+              </ProtectedRoute>
             } 
           />
           <Route 
             path="cms" 
             element={
-              user?.role === 'admin' ? (
-                <CmsAdmin />
-              ) : (
-                <div className="bg-white p-8 rounded-2xl border border-gray-150 text-center text-sm font-bold text-red-500">
-                  <i className="bi bi-shield-lock-fill text-3xl block mb-2 text-red-400"></i>
-                  Akses Ditolak: Halaman ini hanya dapat diakses oleh Admin.
-                </div>
-              )
+              <ProtectedRoute>
+                {user?.role === 'admin' ? (
+                  <CmsAdmin />
+                ) : (
+                  <div className="bg-white p-8 rounded-2xl border border-gray-150 text-center text-sm font-bold text-red-500">
+                    <i className="bi bi-shield-lock-fill text-3xl block mb-2 text-red-400"></i>
+                    Akses Ditolak: Halaman ini hanya dapat diakses oleh Admin.
+                  </div>
+                )}
+              </ProtectedRoute>
             } 
           />
+
+
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Route>
+
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" replace />} />
