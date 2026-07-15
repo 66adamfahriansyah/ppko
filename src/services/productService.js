@@ -31,3 +31,10 @@ export async function deleteProduct(id) {
     method: 'DELETE'
   });
 }
+
+export async function getProductById(id) {
+  return request(`/products/${id}`, {
+    method: 'GET'
+  });
+}
+

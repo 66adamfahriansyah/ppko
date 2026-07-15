@@ -70,13 +70,19 @@ export async function initializeDatabase() {
         address VARCHAR(255) NOT NULL,
         contact VARCHAR(20) NOT NULL,
         price VARCHAR(50) DEFAULT '0',
-        image VARCHAR(500) DEFAULT '',
+        image LONGTEXT NULL,
         is_active TINYINT(1) DEFAULT 1,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    // Migrasi kolom image tabel products agar bertipe LONGTEXT
+    try {
+      await connection.query('ALTER TABLE products MODIFY COLUMN image LONGTEXT NULL');
+    } catch (e) { /* ignore */ }
+
 
     
     // Seed default logs jika tabel manual_logs kosong

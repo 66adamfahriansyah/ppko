@@ -10,7 +10,9 @@ import LoginRegister from './pages/LoginRegister';
 import Home from './pages/Home';
 import CmsAdmin from './pages/CmsAdmin';
 import MyShop from './pages/MyShop';
+import ProductDetail from './pages/ProductDetail';
 import { AuthContextProvider, useAuth } from './context/AuthContext';
+
 
 
 function ProtectedRoute({ children }) {
@@ -37,6 +39,7 @@ function AppContent() {
       <Routes>
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
         <Route 
           path="/login" 
           element={!user ? <LoginRegister mode="login" /> : <Navigate to="/admin" replace />} 
@@ -55,6 +58,8 @@ function AppContent() {
           {/* Public Pages */}
           <Route index element={<Dashboard />} />
           <Route path="trends" element={<Trends />} />
+
+
 
           {/* Protected Toko Page (For logged-in farmers/admins) */}
           <Route 

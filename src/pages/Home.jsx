@@ -1,16 +1,31 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCmsData } from '../utils/cmsHelper';
+import { getPublicProducts } from '../services/productService';
+
 
 function Home() {
   const navigate = useNavigate();
   const [cmsData, setCmsData] = useState(getCmsData());
+  const [dbProducts, setDbProducts] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const carouselRef = useRef(null);
+
+  const fetchDbProducts = async () => {
+    try {
+      const data = await getPublicProducts();
+      setDbProducts(data);
+    } catch (err) {
+      console.error("Gagal mengambil data produk dari database:", err);
+    }
+  };
 
   // Sync data on load
   useEffect(() => {
     setCmsData(getCmsData());
+    fetchDbProducts();
   }, []);
+
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -33,7 +48,7 @@ function Home() {
   return (
     <div className="min-h-screen bg-[#f8faf8] font-sans text-gray-800 scroll-smooth">
       {/* 1. HEADER / NAVBAR */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-emerald-50 shadow-sm py-4 px-6 md:px-12 flex justify-between items-center transition-all">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-emerald-50 shadow-sm py-4 px-6 md:px-12 flex justify-between items-center transition-all relative">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="w-10 h-10 bg-[#0b5924] rounded-xl flex items-center justify-center text-white text-lg shadow-sm">
             <i className="bi bi-flower1"></i>
@@ -44,6 +59,7 @@ function Home() {
           </div>
         </div>
 
+        {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-600">
           <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:text-emerald-700 transition">Beranda</button>
           <button onClick={() => scrollToSection('komoditas')} className="hover:text-emerald-700 transition">Komoditas</button>
@@ -51,7 +67,8 @@ function Home() {
           <button onClick={() => scrollToSection('about')} className="hover:text-emerald-700 transition">Tentang Kami</button>
         </nav>
 
-        <div className="flex items-center gap-3">
+        {/* Desktop Action Buttons */}
+        <div className="hidden md:flex items-center gap-3">
           <button 
             onClick={() => navigate('/admin')}
             className="border border-[#0b5924] text-[#0b5924] hover:bg-emerald-50 px-4 py-2.5 rounded-full text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
@@ -70,8 +87,71 @@ function Home() {
           >
             <i className="bi bi-person-plus-fill"></i> Daftar
           </button>
-
         </div>
+
+        {/* Mobile Hamburger Toggle Button */}
+        <div className="flex md:hidden items-center">
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+            className="text-gray-700 hover:text-emerald-700 p-2 text-2xl focus:outline-none cursor-pointer"
+            aria-label="Toggle menu"
+          >
+            <i className={isMenuOpen ? "bi bi-x-lg" : "bi bi-list"}></i>
+          </button>
+        </div>
+
+        {/* Mobile Drawer Dropdown Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-emerald-50 shadow-lg px-6 py-5 flex flex-col gap-4 animate-in slide-in-from-top-5 duration-200 z-50">
+            <button 
+              onClick={() => { setIsMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+              className="text-left font-bold text-gray-700 hover:text-emerald-700 py-2 border-b border-gray-50 flex items-center gap-2 cursor-pointer"
+            >
+              <i className="bi bi-house"></i> Beranda
+            </button>
+            <button 
+              onClick={() => { setIsMenuOpen(false); scrollToSection('komoditas'); }} 
+              className="text-left font-bold text-gray-700 hover:text-emerald-700 py-2 border-b border-gray-50 flex items-center gap-2 cursor-pointer"
+            >
+              <i className="bi bi-flower1"></i> Komoditas
+            </button>
+            <button 
+              onClick={() => { setIsMenuOpen(false); scrollToSection('marketplace'); }} 
+              className="text-left font-bold text-gray-700 hover:text-emerald-700 py-2 border-b border-gray-50 flex items-center gap-2 cursor-pointer"
+            >
+              <i className="bi bi-shop"></i> Marketplace
+            </button>
+            <button 
+              onClick={() => { setIsMenuOpen(false); scrollToSection('about'); }} 
+              className="text-left font-bold text-gray-700 hover:text-emerald-700 py-2 border-b border-gray-50 flex items-center gap-2 cursor-pointer"
+            >
+              <i className="bi bi-info-circle"></i> Tentang Kami
+            </button>
+            
+            <div className="flex flex-col gap-2.5 pt-3">
+              <button 
+                onClick={() => { setIsMenuOpen(false); navigate('/admin'); }}
+                className="w-full justify-center border border-[#0b5924] text-[#0b5924] hover:bg-emerald-50 py-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <i className="bi bi-cpu-fill"></i> Monitor Lahan
+              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button 
+                  onClick={() => { setIsMenuOpen(false); navigate('/login'); }}
+                  className="w-full justify-center border border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="bi bi-box-arrow-in-right"></i> Masuk
+                </button>
+                <button 
+                  onClick={() => { setIsMenuOpen(false); navigate('/register'); }}
+                  className="w-full justify-center bg-[#0b5924] hover:bg-[#073c18] text-white py-3 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i className="bi bi-person-plus-fill"></i> Daftar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
 
@@ -186,42 +266,69 @@ function Home() {
             <p className="text-sm text-gray-500 mt-2">Beli langsung produk bawang merah terbaik tanpa perantara. Hubungi petani kami langsung via WhatsApp.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cmsData.marketplace.filter(prod => prod.status).map((prod) => (
-              <div
-                key={prod.id}
-                className="bg-gray-50/50 border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div className="relative h-48 bg-gray-200">
-                  <img src={prod.gambar} alt={prod.nama} className="w-full h-full object-cover" />
-                  <div className="absolute bottom-4 right-4 bg-[#0b5924] text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm">
-                    Rp {prod.harga} / {prod.satuan}
-                  </div>
-                </div>
-                <div className="p-6 space-y-4 flex-1 flex flex-col justify-between">
-                  <div className="space-y-2">
-                    <h3 className="text-base font-bold text-gray-800">{prod.nama}</h3>
-                    <p className="text-xs text-gray-500 leading-relaxed line-clamp-3">{prod.deskripsi}</p>
-                  </div>
-
-                  <div className="space-y-4 pt-3 border-t border-gray-100">
-                    <div className="flex items-center text-xs text-gray-400 font-semibold gap-1.5">
-                      <i className="bi bi-person text-base text-emerald-600"></i>
-                      <span>{prod.petani}</span>
-                    </div>
-
-                    <a
-                      href={`https://wa.me/${prod.whatsapp}?text=Halo%20${encodeURIComponent(prod.petani)},%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(prod.nama)}%20di%20Website%20E-BIO%20PENS.`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm shadow-green-500/10 cursor-pointer"
-                    >
-                      <i className="bi bi-whatsapp"></i> Hubungi Petani (WA)
-                    </a>
-                  </div>
-                </div>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+            {dbProducts.length === 0 ? (
+              <div className="col-span-full py-12 text-center text-gray-400 font-semibold text-xs bg-gray-50 border border-gray-100 rounded-3xl">
+                <i className="bi bi-inboxes-fill text-2xl block mb-2 text-gray-300"></i>
+                Belum ada produk hasil panen yang diunggah oleh petani terverifikasi.
               </div>
-            ))}
+            ) : (
+              dbProducts.map((prod) => {
+                // Parse first image
+                let mainImg = 'https://images.unsplash.com/photo-1608797178974-15b35a61d121?w=500&auto=format&fit=crop&q=60';
+                try {
+                  const arr = JSON.parse(prod.image || '[]');
+                  if (Array.isArray(arr) && arr.length > 0) {
+                    mainImg = arr[0];
+                  } else if (prod.image) {
+                    mainImg = prod.image;
+                  }
+                } catch {
+                  if (prod.image) {
+                    mainImg = prod.image;
+                  }
+                }
+
+                return (
+                  <div
+                    key={prod.id}
+                    onClick={() => navigate(`/product/${prod.id}`)}
+                    className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer group hover:-translate-y-1"
+                  >
+                    <div className="relative h-32 sm:h-48 bg-gray-50 overflow-hidden">
+                      <img 
+                        src={mainImg} 
+                        alt={prod.name} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      />
+                    </div>
+                    <div className="p-3 sm:p-5 space-y-3">
+                      <div>
+                        <h3 className="text-xs sm:text-sm font-extrabold text-gray-900 group-hover:text-[#0b5924] transition-colors line-clamp-1">{prod.name}</h3>
+                        <div className="text-emerald-800 text-xs sm:text-sm font-black mt-0.5 sm:mt-1">{prod.price}</div>
+                      </div>
+
+                      <div className="space-y-1.5 pt-2.5 border-t border-gray-100 text-[10px] sm:text-xs text-gray-600 font-semibold">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <i className="bi bi-people-fill text-xs sm:text-base text-emerald-600"></i>
+                          <span className="font-extrabold text-gray-800 truncate">
+                            {prod.owner_poktan || 'Poktan Mandiri'}{' '}
+                            <span className="text-[8px] sm:text-[10px] text-gray-400 font-bold ml-0.5">({prod.owner_username})</span>
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <i className="bi bi-geo-alt-fill text-xs sm:text-base text-emerald-600"></i>
+                          <span className="truncate text-gray-500 font-medium">{prod.address}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+
+
+
           </div>
         </div>
       </section>

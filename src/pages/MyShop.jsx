@@ -22,8 +22,8 @@ function MyShop() {
   const [address, setAddress] = useState('');
   const [contact, setContact] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
-  const [isActive, setIsActive] = useState(true);
+  const [images, setImages] = useState([]);
+
 
   // Preset Images
   const presetImages = [
@@ -59,32 +59,55 @@ function MyShop() {
     fetchUserProfile();
   }, []);
 
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setError('');
+    
+    files.forEach(file => {
+      if (file.size > 2 * 1024 * 1024) {
+        setError('Salah satu ukuran gambar terlalu besar (Maksimal 2MB).');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImages(prev => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   // Pre-fill fields on Add/Edit modal open
   const openModal = (product = null) => {
     setEditingProduct(product);
     if (product) {
       setName(product.name);
-      setPrice(product.price);
-      setAddress(product.address);
-      setContact(product.contact);
+      // Extract numeric value from stored formatted price (e.g. "Rp 28.000 / kg")
+      const numericPrice = product.price ? product.price.replace(/\D/g, '') : '';
+      setPrice(numericPrice);
       setDescription(product.description);
-      setImage(product.image);
-      setIsActive(product.is_active === 1);
+      
+      // Parse images array from JSON or fallback
+      let parsedImages = [];
+      try {
+        parsedImages = JSON.parse(product.image || '[]');
+        if (!Array.isArray(parsedImages)) {
+          parsedImages = product.image ? [product.image] : [];
+        }
+      } catch {
+        parsedImages = product.image ? [product.image] : [];
+      }
+      setImages(parsedImages);
     } else {
       setName('');
-      setPrice('Rp 28.000 / kg'); // default price structure
-      // Auto-fill from user profile details
-      setAddress(userFresh?.alamat || user?.alamat || '');
-      setContact(userFresh?.no_telp || user?.no_telp || '');
+      setPrice(''); // empty default price
       setDescription('');
-      setImage(presetImages[0].url);
-      setIsActive(true);
+      setImages([presetImages[0].url]);
     }
     setIsModalOpen(true);
     setError('');
     setSuccess('');
   };
-
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -97,15 +120,23 @@ function MyShop() {
     setError('');
     setSuccess('');
 
+    if (images.length === 0) {
+      setError('Mohon pilih atau unggah minimal satu gambar untuk produk Anda');
+      return;
+    }
+
+    // Automatically format numeric price to "Rp X.XXX / kg"
+    const formattedPrice = 'Rp ' + Number(price).toLocaleString('id-ID') + ' / kg';
+
     const payload = {
       name,
-      price,
-      address,
-      contact,
+      price: formattedPrice,
       description,
-      image,
-      isActive: isActive ? 1 : 0
+      image: JSON.stringify(images),
+      isActive: 1 // Always display publicly by default
     };
+
+
 
     try {
       if (editingProduct) {
@@ -218,44 +249,62 @@ function MyShop() {
         </div>
 
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-2xl border border-gray-150 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition duration-300">
+            <div key={product.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1">
               <div>
-                <div className="h-44 relative bg-gray-50 overflow-hidden">
-                  <img
-                    src={product.image || presetImages[0].url}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
-                  <div className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold ${product.is_active === 1 ? 'bg-emerald-500/90 text-white' : 'bg-gray-400/90 text-white'}`}>
+                <div className="h-32 sm:h-44 relative bg-gray-50 overflow-hidden">
+                  {(() => {
+                    let firstImg = presetImages[0].url;
+                    try {
+                      const arr = JSON.parse(product.image || '[]');
+                      if (Array.isArray(arr) && arr.length > 0) {
+                        firstImg = arr[0];
+                      } else if (product.image) {
+                        firstImg = product.image;
+                      }
+                    } catch {
+                      if (product.image) {
+                        firstImg = product.image;
+                      }
+                    }
+                    return (
+                      <img
+                        src={firstImg}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    );
+                  })()}
+                  <div className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold ${product.is_active === 1 ? 'bg-emerald-500/90 text-white' : 'bg-gray-400/90 text-white'} shadow-sm`}>
                     {product.is_active === 1 ? 'Tayang' : 'Draft'}
                   </div>
                 </div>
-                <div className="p-5 space-y-3">
+
+                <div className="p-3 sm:p-5 space-y-3">
                   <div>
-                    <h3 className="font-extrabold text-gray-800 text-sm truncate">{product.name}</h3>
-                    <span className="text-xs font-bold text-emerald-800 block mt-0.5">{product.price}</span>
+                    <h3 className="font-extrabold text-gray-900 text-xs sm:text-sm truncate group-hover:text-[#0b5924] transition-colors">{product.name}</h3>
+                    <span className="text-xs sm:text-sm font-black text-emerald-800 block mt-0.5 sm:mt-1">{product.price}</span>
                   </div>
-                  <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{product.description}</p>
+                  <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 leading-relaxed font-medium">{product.description}</p>
                   
-                  <div className="space-y-1 pt-2 border-t border-gray-100 text-[11px] text-gray-600 font-medium">
-                    <p className="flex items-center gap-1.5"><i className="bi bi-geo-alt text-emerald-700"></i> <span className="truncate">{product.address}</span></p>
-                    <p className="flex items-center gap-1.5"><i className="bi bi-whatsapp text-emerald-700"></i> {product.contact}</p>
+                  <div className="space-y-1 pt-2.5 border-t border-gray-100 text-[10px] sm:text-xs text-gray-600 font-semibold">
+                    <p className="flex items-center gap-1.5 sm:gap-2"><i className="bi bi-geo-alt-fill text-emerald-600"></i> <span className="truncate text-gray-500 font-medium">{product.address}</span></p>
+                    <p className="flex items-center gap-1.5 sm:gap-2"><i className="bi bi-whatsapp text-emerald-600"></i> <span className="text-gray-800 font-extrabold">{product.contact}</span></p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-5 pt-0 flex gap-2">
+              <div className="p-3 sm:p-5 pt-0 flex gap-1.5 sm:gap-2">
                 <button
                   onClick={() => openModal(product)}
-                  className="flex-1 border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs py-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-[10px] sm:text-xs py-1.5 sm:py-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1"
                 >
                   <i className="bi bi-pencil"></i> Edit
                 </button>
                 <button
                   onClick={() => handleDelete(product.id)}
-                  className="border border-red-100 hover:bg-red-50 text-red-600 font-bold text-xs py-2 px-3.5 rounded-xl transition cursor-pointer flex items-center justify-center"
+                  className="border border-red-100 hover:bg-red-50 text-red-600 font-bold text-[10px] sm:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3.5 rounded-xl transition cursor-pointer flex items-center justify-center"
                   title="Hapus Produk"
                 >
                   <i className="bi bi-trash-fill"></i>
@@ -264,6 +313,7 @@ function MyShop() {
             </div>
           ))}
         </div>
+
       )}
 
       {/* Form Dialog Modal */}
@@ -291,40 +341,18 @@ function MyShop() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Harga & Satuan</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Rp 28.000 / kg"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 px-3 text-xs outline-none focus:border-emerald-600 focus:bg-white transition-all font-semibold text-gray-700"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Alamat Penjualan</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Dusun Sajen, Mojokerto"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 px-3 text-xs outline-none focus:border-emerald-600 focus:bg-white transition-all font-semibold text-gray-700"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Kontak WA Pembeli</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="628123456789"
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 px-3 text-xs outline-none focus:border-emerald-600 focus:bg-white transition-all font-semibold text-gray-700"
-                  />
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Harga (per kg)</label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 font-bold text-xs pointer-events-none">Rp</span>
+                    <input
+                      type="number"
+                      required
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 pl-8 pr-12 text-xs outline-none focus:border-emerald-600 focus:bg-white transition-all font-semibold text-gray-700"
+                    />
+                    <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 text-[10px] font-bold pointer-events-none">/ kg</span>
+                  </div>
                 </div>
               </div>
 
@@ -340,49 +368,77 @@ function MyShop() {
                 />
               </div>
 
-              {/* Preset Image Selector */}
-              <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Pilih Ilustrasi Gambar</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {presetImages.map((img, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => setImage(img.url)}
-                      className={`relative rounded-xl overflow-hidden h-16 border-2 cursor-pointer transition ${image === img.url ? 'border-emerald-600 ring-2 ring-emerald-600/20' : 'border-transparent opacity-70 hover:opacity-100'}`}
-                    >
-                      <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/35 flex items-end justify-center p-1">
-                        <span className="text-[8px] text-white font-bold text-center leading-none truncate w-full">{img.name}</span>
+              {/* Preset Image Selector & Local Gallery Upload */}
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Pilih Ilustrasi Gambar (Klik untuk Menambahkan)</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {presetImages.map((img, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => setImages(prev => [...prev, img.url])}
+                        className="relative rounded-xl overflow-hidden h-16 border border-gray-200 cursor-pointer transition opacity-80 hover:opacity-100 active:scale-95"
+                      >
+                        <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/35 flex items-end justify-center p-1">
+                          <span className="text-[8px] text-white font-bold text-center leading-none truncate w-full">{img.name}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-                {/* Custom URL Option */}
-                <div className="mt-3">
-                  <label className="text-[9px] font-bold text-gray-400 block mb-1">Atau Masukkan URL Gambar Custom</label>
-                  <input
-                    type="text"
-                    placeholder="https://..."
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2 px-3 text-[10px] outline-none focus:border-emerald-600 focus:bg-white transition-all font-semibold text-gray-600"
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* File Upload Selector */}
+                  <div>
+                    <label className="text-[9px] font-bold text-gray-400 block mb-1">Atau Unggah File Gambar (Bisa Pilih Banyak)</label>
+                    <label className="w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 hover:border-emerald-600 rounded-xl py-3 px-4 text-xs font-semibold text-gray-600 cursor-pointer bg-gray-50/50 hover:bg-white transition-all">
+                      <i className="bi bi-image text-emerald-700"></i>
+                      <span>Pilih File Gambar</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        multiple 
+                        className="hidden" 
+                        onChange={handleFileChange} 
+                      />
+                    </label>
+                  </div>
+
+                  {/* Multiple Images Thumbnail List */}
+                  <div>
+                    <label className="text-[9px] font-bold text-gray-400 block mb-1">Daftar Gambar Terpilih ({images.length})</label>
+                    {images.length === 0 ? (
+                      <div className="h-12 border border-gray-200 rounded-xl bg-gray-50 flex items-center justify-center p-1">
+                        <span className="text-[9px] text-gray-400 font-medium">Belum ada gambar</span>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-4 gap-2 max-h-24 overflow-y-auto p-1.5 border border-gray-200 rounded-xl bg-gray-50">
+                        {images.map((img, idx) => (
+                          <div key={idx} className="relative rounded-lg overflow-hidden h-10 border border-gray-250 group">
+                            <img src={img} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => setImages(prev => prev.filter((_, i) => i !== idx))}
+                              className="absolute top-0.5 right-0.5 bg-red-600 hover:bg-red-700 text-white rounded-full w-3.5 h-3.5 flex items-center justify-center text-[8px] leading-none transition cursor-pointer"
+                              title="Hapus"
+                            >
+                              <i className="bi bi-x"></i>
+                            </button>
+                            {idx === 0 && (
+                              <div className="absolute bottom-0 inset-x-0 bg-[#0b5924]/90 text-white text-[6px] font-extrabold text-center py-0.5 leading-none">
+                                UTAMA
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Toggle Active status */}
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="activeToggle"
-                  checked={isActive}
-                  onChange={(e) => setIsActive(e.target.checked)}
-                  className="w-4 h-4 accent-emerald-700 cursor-pointer"
-                />
-                <label htmlFor="activeToggle" className="text-xs font-bold text-gray-700 cursor-pointer">
-                  Tampilkan Produk Ini ke Publik (Katalog E-Commerce)
-                </label>
-              </div>
+
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4 border-t border-gray-100">
