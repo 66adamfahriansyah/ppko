@@ -28,4 +28,16 @@ class LogsController {
   };
 }
 
+import pool from '../config/db.js';
+import LogsRepository from '../repositories/LogsRepository.js';
+import LogsService from '../services/LogsService.js';
+
+const logsRepository = new LogsRepository(pool);
+const logsService = new LogsService(logsRepository);
+const logsController = new LogsController(logsService);
+
+export const getLogs = logsController.getLogs;
+export const addLog = logsController.addLog;
+
 export default LogsController;
+

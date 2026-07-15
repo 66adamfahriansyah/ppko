@@ -28,4 +28,16 @@ class AuthController {
   };
 }
 
+import pool from '../config/db.js';
+import UserRepository from '../repositories/UserRepository.js';
+import AuthService from '../services/AuthService.js';
+
+const userRepository = new UserRepository(pool);
+const authService = new AuthService(userRepository);
+const authController = new AuthController(authService);
+
+export const register = authController.register;
+export const login = authController.login;
+
 export default AuthController;
+

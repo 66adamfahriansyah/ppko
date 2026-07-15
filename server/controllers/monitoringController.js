@@ -37,4 +37,17 @@ class MonitoringController {
   };
 }
 
+import pool from '../config/db.js';
+import MonitoringRepository from '../repositories/MonitoringRepository.js';
+import MonitoringService from '../services/MonitoringService.js';
+
+const monitoringRepository = new MonitoringRepository(pool);
+const monitoringService = new MonitoringService(monitoringRepository);
+const monitoringController = new MonitoringController(monitoringService);
+
+export const getMonitoringData = monitoringController.getMonitoringData;
+export const updateControl = monitoringController.updateControl;
+export const updateSensorData = monitoringController.updateSensorData;
+
 export default MonitoringController;
+
