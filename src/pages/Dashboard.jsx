@@ -39,13 +39,15 @@ function Dashboard() {
   const [data, setData] = useState(defaultData);
   const [lastUpdate, setLastUpdate] = useState("Menghubungkan...");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const fetchData = async () => {
     try {
       const val = await getMonitoring();
       setData(val);
+      setIsLoaded(true);
       const now = new Date();
-      setLastUpdate(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB");
+      setLastUpdate(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " WIB (Live)");
     } catch (error) {
       console.warn("Backend read error, using mock/default data:", error);
       setData(defaultData);
@@ -54,74 +56,11 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    let socket = null;
-    let pollInterval = null;
-    let isMounted = true;
-
-    const startPolling = () => {
-      if (pollInterval) clearInterval(pollInterval);
-      fetchData(); // Ambil data langsung
-      pollInterval = setInterval(fetchData, 3000); // Polling setiap 3 detik
-      console.log("WS: Menggunakan mode HTTP Polling fallback.");
-    };
-
-    const connectWebSocket = () => {
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsHost = window.location.hostname || 'localhost';
-      const wsUrl = `${wsProtocol}//${wsHost}:8080/ws/client`;
-
-      console.log(`WS: Mencoba menyambung ke ${wsUrl}...`);
-      socket = new WebSocket(wsUrl);
-
-      socket.onopen = () => {
-        console.log("WS: Terkoneksi ke backend WebSocket server.");
-        if (pollInterval) {
-          clearInterval(pollInterval);
-          pollInterval = null;
-        }
-      };
-
-      socket.onmessage = (event) => {
-        if (!isMounted) return;
-        try {
-          const payload = JSON.parse(event.data);
-          if (payload.type === 'snapshot' || payload.type === 'update') {
-            setData(payload.data);
-            const now = new Date();
-            setLastUpdate(now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " WIB (Live)");
-          }
-        } catch (err) {
-          console.error("WS message parse error:", err);
-        }
-      };
-
-      socket.onerror = (error) => {
-        console.warn("WS connection error, falling back to HTTP Polling:", error);
-        if (isMounted && !pollInterval) {
-          startPolling();
-        }
-      };
-
-      socket.onclose = (event) => {
-        console.warn(`WS connection closed (code: ${event.code}), falling back to HTTP Polling`);
-        if (isMounted && !pollInterval) {
-          startPolling();
-        }
-        // Mencoba menyambung kembali setelah 5 detik jika komponen masih termuat
-        setTimeout(() => {
-          if (isMounted && (!socket || socket.readyState === WebSocket.CLOSED)) {
-            connectWebSocket();
-          }
-        }, 5000);
-      };
-    };
-
-    connectWebSocket();
+    fetchData(); // Initial load
+    const interval = setInterval(fetchData, 2000); // Polling every 2 seconds
 
     return () => {
-      isMounted = false;
-      if (socket) socket.close();
-      if (pollInterval) clearInterval(pollInterval);
+      clearInterval(interval);
     };
   }, []);
 
@@ -189,11 +128,11 @@ function Dashboard() {
       </div>
 
       {/* Cards Row 1 (PLTS, Hujan, Light Trap) */}
-      <DeviceStatusCards data={data} />
+      <DeviceStatusCards data={data} isLoaded={isLoaded} />
 
       {/* Cards Row 2 (NPK & Tiang Map) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <NPKSensorCard data={data} />
+        <NPKSensorCard data={data} isLoaded={isLoaded} />
         <DeviceMapCard />
       </div>
 

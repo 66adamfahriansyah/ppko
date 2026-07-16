@@ -7,7 +7,7 @@ import monitoringRoutes from './routes/monitoringRoutes.js';
 import logsRoutes from './routes/logsRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
-import { initializeWebSocketServer } from './services/websocketService.js';
+import { initializeMqttService } from './services/mqttService.js';
 
 dotenv.config();
 
@@ -36,5 +36,5 @@ app.listen(PORT, () => {
   console.log(`🚀 Server backend berjalan di http://localhost:${PORT}`);
 });
 
-// Start WebSocket Server
-initializeWebSocketServer();
+// Start MQTT Service
+initializeMqttService();

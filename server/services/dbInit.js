@@ -6,6 +6,72 @@ export async function initializeDatabase() {
     const connection = await pool.getConnection();
     console.log('✅ Terkoneksi ke database MySQL (XAMPP) dengan sukses.');
     
+    // Buat tabel-tabel monitoring jika belum ada
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS plts_monitoring (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        voltage FLOAT DEFAULT 0.0,
+        current FLOAT DEFAULT 0.0,
+        battery INT DEFAULT 0,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS rain_monitoring (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        status VARCHAR(50) DEFAULT '-',
+        detection VARCHAR(50) DEFAULT '-',
+        intensity INT DEFAULT 0,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS light_trap_monitoring (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        active TINYINT(1) DEFAULT 0,
+        trigger_mode VARCHAR(50) DEFAULT '-',
+        duration INT DEFAULT 0,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS npk_monitoring (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nitrogen INT DEFAULT 0,
+        phosphor INT DEFAULT 0,
+        potassium INT DEFAULT 0,
+        status VARCHAR(50) DEFAULT '-',
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS control_monitoring (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        auto_mode TINYINT(1) DEFAULT 0,
+        manual_active TINYINT(1) DEFAULT 0,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // Seed data awal jika kosong
+    const seedTable = async (tableName, insertQuery) => {
+      const [rows] = await connection.query(`SELECT COUNT(*) as count FROM \`${tableName}\``);
+      if (rows[0].count === 0) {
+        await connection.query(insertQuery);
+        console.log(`🌱 Seeded initial row for ${tableName}.`);
+      }
+    };
+
+    await seedTable('plts_monitoring', 'INSERT INTO plts_monitoring (id, voltage, current, battery) VALUES (1, 0.0, 0.0, 0)');
+    await seedTable('rain_monitoring', "INSERT INTO rain_monitoring (id, status, detection, intensity) VALUES (1, '-', '-', 0)");
+    await seedTable('light_trap_monitoring', "INSERT INTO light_trap_monitoring (id, active, trigger_mode, duration) VALUES (1, 0, '-', 0)");
+    await seedTable('npk_monitoring', "INSERT INTO npk_monitoring (id, nitrogen, phosphor, potassium, status) VALUES (1, 0, 0, 0, '-')");
+    await seedTable('control_monitoring', 'INSERT INTO control_monitoring (id, auto_mode, manual_active) VALUES (1, 0, 0)');
+
     // Buat tabel users jika belum ada
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
@@ -59,6 +125,15 @@ export async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+    
+    // Tambah kolom user_id ke tabel manual_logs jika belum ada (backward compatibility)
+    try {
+      await connection.query('ALTER TABLE manual_logs ADD COLUMN user_id INT NULL');
+    } catch (e) { /* ignore if column exists */ }
+    try {
+      await connection.query('ALTER TABLE manual_logs ADD CONSTRAINT fk_manual_logs_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL');
+    } catch (e) { /* ignore if constraint exists */ }
+    
     
     // Buat tabel products jika belum ada (e-commerce anggota tani)
     await connection.query(`
