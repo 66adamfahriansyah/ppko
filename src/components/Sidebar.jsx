@@ -162,6 +162,15 @@ function Sidebar({ user, onLogout, isOpen, onClose }) {
               </>
             )}
 
+            {/* Kembali ke Landing Page */}
+            <div className="border-t border-gray-100 my-2 pt-2">
+              <NavLink 
+                to="/" 
+                className="flex items-center px-4 py-3 text-sm font-semibold rounded-lg transition-all text-gray-600 hover:bg-emerald-50 hover:text-emerald-700"
+              >
+                <i className="bi bi-arrow-left-circle mr-3"></i> Landing Page
+              </NavLink>
+            </div>
           </nav>
         </div>
 

@@ -16,8 +16,8 @@ Dokumen ini berisi spesifikasi tampilan dan struktur komponen untuk halaman *Fro
 *   **Fokus:** Pertanian Bawang Merah di Desa Sajen, Mojokerto.
 *   **Visual:** Gambar latar belakang penuh (*full width*) berkualitas tinggi yang menampilkan hamparan ladang bawang merah di Desa Sajen saat matahari terbit atau petani yang sedang bekerja. Terdapat *overlay* gradien hijau keabu-abuan gelap agar teks mudah dibaca.
 *   **Tipografi:**
-    *   *Headline:* "Membangun Pertanian Bawang Merah Berkelanjutan di Desa Sajen" (Teks tebal `font-extrabold`, ukuran besar `text-4xl md:text-5xl`, warna putih).
-    *   *Sub-headline:* "Menggabungkan kearifan lokal bertani Mojokerto dengan inovasi teknologi untuk hasil panen yang maksimal." (Warna teks `text-emerald-50`, ukuran `text-lg`).
+    *   *Headline:* "Pertanian Bawang Merah di Desa Sajen" (Teks tebal `font-extrabold`, ukuran besar `text-4xl md:text-5xl`, warna putih).
+    *   *Sub-headline:* "Menggabungkan kearifan lokal bertani Mojokerto dengan inovasi teknologi  IoT untuk hasil panen yang maksimal." (Warna teks `text-emerald-50`, ukuran `text-lg`).
 *   **Tombol CTA:** "Lihat Hasil Panen" (`bg-emerald-600 hover:bg-emerald-500`) dan "Marketplace Petani" (Gaya *outline* dengan `border-white`).
 
 ### C. Komoditas Section (Sliding Box / Carousel)
