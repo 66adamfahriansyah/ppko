@@ -219,7 +219,7 @@ function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-end mb-10 animate-on-scroll animate-fade-up">
             <div>
-              <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1">Hasil Bumi</span>
+              <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1">Hasil Pertanian</span>
               <h2 className="text-3xl font-extrabold text-emerald-950">Komoditas Utama Bawang Merah</h2>
             </div>
             <div className="flex items-center gap-3">
@@ -272,7 +272,7 @@ function Home() {
                         <strong className="text-emerald-800 font-bold text-base">{item.tonase}</strong>
                       </div>
                       <div>
-            <span className="text-gray-400 block">Luas Lahan</span>
+                        <span className="text-gray-400 block">Luas Lahan</span>
                         <strong className="text-gray-700 font-bold text-base">{item.luas}</strong>
                       </div>
                     </div>
@@ -280,9 +280,9 @@ function Home() {
                 </div>
               );
             })}
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
       {/* 4. MARKETPLACE SECTION */}
       <section id="marketplace" className="py-20 px-6 md:px-12 bg-white">
