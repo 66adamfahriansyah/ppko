@@ -45,7 +45,7 @@ function LoginRegister({ mode = 'login' }) {
       setPassword('');
 
 
-      
+
       // Auto-redirect to login after 2 seconds
       setTimeout(() => {
         navigate('/login');
@@ -85,11 +85,11 @@ function LoginRegister({ mode = 'login' }) {
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-emerald-50 p-8 z-10 relative backdrop-blur-sm bg-white/95">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-[#0b5924] rounded-2xl flex items-center justify-center mx-auto shadow-md shadow-emerald-950/20 mb-3 text-white text-2xl">
-            <i className="bi bi-tree-fill"></i>
+          <div className="flex justify-center mx-auto mb-3">
+            <img src="/logo.png" alt="Logo" className="w-48 h-12 object-contain" />
           </div>
-          <h2 className="text-2xl font-black text-emerald-900 tracking-tight">E-BIO PENS</h2>
-          <p className="text-xs text-gray-500 font-medium mt-1">Sistem Monitoring & Kontrol Sawah Demplot</p>
+          <h2 className="text-2xl font-black text-emerald-900 tracking-tight"></h2>
+          <p className="text-xs text-gray-500 font-medium mt-1">Sistem Monitoring & Kontrol Light Trap Berbasis IoT</p>
         </div>
 
         {/* Title Header */}
@@ -124,10 +124,10 @@ function LoginRegister({ mode = 'login' }) {
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                   <i className="bi bi-person-fill"></i>
                 </span>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
-                  placeholder="admin@ebio.com"
+                  placeholder="Masukkan Username atau Email"
                   value={identity}
                   onChange={(e) => setIdentity(e.target.value)}
                   className="w-full bg-gray-50/50 border border-gray-150 rounded-xl py-3 pl-10 pr-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-medium"
@@ -141,8 +141,8 @@ function LoginRegister({ mode = 'login' }) {
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                   <i className="bi bi-lock-fill"></i>
                 </span>
-                <input 
-                  type={showLoginPassword ? 'text' : 'password'} 
+                <input
+                  type={showLoginPassword ? 'text' : 'password'}
                   required
                   placeholder="••••••••"
                   value={password}
@@ -160,8 +160,8 @@ function LoginRegister({ mode = 'login' }) {
             </div>
 
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoading}
               className="w-full bg-[#0b5924] hover:bg-[#073c18] text-white py-3.5 rounded-xl text-xs font-bold transition shadow-md shadow-emerald-950/15 flex justify-center items-center gap-2 mt-6 cursor-pointer"
             >
@@ -181,8 +181,8 @@ function LoginRegister({ mode = 'login' }) {
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                   <i className="bi bi-person-badge-fill"></i>
                 </span>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   placeholder="Username Anda"
                   value={username}
@@ -198,8 +198,8 @@ function LoginRegister({ mode = 'login' }) {
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                   <i className="bi bi-person-fill"></i>
                 </span>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   placeholder="Nama Lengkap Anda"
                   value={namaLengkap}
@@ -215,8 +215,8 @@ function LoginRegister({ mode = 'login' }) {
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                   <i className="bi bi-whatsapp"></i>
                 </span>
-                <input 
-                  type="tel" 
+                <input
+                  type="tel"
                   required
                   placeholder="628123456789"
                   value={noTelp}
@@ -232,8 +232,8 @@ function LoginRegister({ mode = 'login' }) {
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                   <i className="bi bi-geo-alt-fill"></i>
                 </span>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   placeholder="Poktan Tani Sajen"
                   value={asalPoktan}
@@ -249,7 +249,7 @@ function LoginRegister({ mode = 'login' }) {
                 <span className="absolute top-3.5 left-0 pl-3.5 text-gray-400">
                   <i className="bi bi-geo-fill"></i>
                 </span>
-                <textarea 
+                <textarea
                   required
                   placeholder="Alamat Lengkap Rumah / Lahan Anda"
                   value={alamat}
@@ -264,9 +264,9 @@ function LoginRegister({ mode = 'login' }) {
               <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Jenis Kelamin</label>
               <div className="flex gap-4">
                 <label className={`flex-1 flex items-center justify-center gap-2 border rounded-xl py-3 px-4 text-xs font-semibold cursor-pointer transition-all ${jenisKelamin === 'Laki-Laki' ? 'border-[#0b5924] bg-emerald-50/30 text-emerald-800' : 'border-gray-150 bg-gray-50/30 text-gray-600 hover:border-emerald-600'}`}>
-                  <input 
-                    type="radio" 
-                    name="jenisKelamin" 
+                  <input
+                    type="radio"
+                    name="jenisKelamin"
                     value="Laki-Laki"
                     checked={jenisKelamin === 'Laki-Laki'}
                     onChange={(e) => setJenisKelamin(e.target.value)}
@@ -275,9 +275,9 @@ function LoginRegister({ mode = 'login' }) {
                   <span>Laki-Laki</span>
                 </label>
                 <label className={`flex-1 flex items-center justify-center gap-2 border rounded-xl py-3 px-4 text-xs font-semibold cursor-pointer transition-all ${jenisKelamin === 'Perempuan' ? 'border-[#0b5924] bg-emerald-50/30 text-emerald-800' : 'border-gray-150 bg-gray-50/30 text-gray-600 hover:border-emerald-600'}`}>
-                  <input 
-                    type="radio" 
-                    name="jenisKelamin" 
+                  <input
+                    type="radio"
+                    name="jenisKelamin"
                     value="Perempuan"
                     checked={jenisKelamin === 'Perempuan'}
                     onChange={(e) => setJenisKelamin(e.target.value)}
@@ -294,8 +294,8 @@ function LoginRegister({ mode = 'login' }) {
                 <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
                   <i className="bi bi-lock-fill"></i>
                 </span>
-                <input 
-                  type={showPassword ? 'text' : 'password'} 
+                <input
+                  type={showPassword ? 'text' : 'password'}
                   required
                   placeholder="Minimal 6 karakter"
                   value={password}
@@ -312,8 +312,8 @@ function LoginRegister({ mode = 'login' }) {
               </div>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoading}
               className="w-full bg-[#0b5924] hover:bg-[#073c18] text-white py-3.5 rounded-xl text-xs font-bold transition shadow-md shadow-emerald-950/15 flex justify-center items-center gap-2 mt-6 cursor-pointer"
             >
@@ -334,8 +334,8 @@ function LoginRegister({ mode = 'login' }) {
             {isLogin ? (
               <>
                 Belum memiliki akun?{' '}
-                <button 
-                  onClick={() => { setError(''); setSuccess(''); navigate('/register'); }} 
+                <button
+                  onClick={() => { setError(''); setSuccess(''); navigate('/register'); }}
                   className="text-emerald-700 hover:text-emerald-800 font-bold underline cursor-pointer"
                 >
                   Daftar di sini
@@ -344,8 +344,8 @@ function LoginRegister({ mode = 'login' }) {
             ) : (
               <>
                 Sudah memiliki akun?{' '}
-                <button 
-                  onClick={() => { setError(''); setSuccess(''); navigate('/login'); }} 
+                <button
+                  onClick={() => { setError(''); setSuccess(''); navigate('/login'); }}
                   className="text-emerald-700 hover:text-emerald-800 font-bold underline cursor-pointer"
                 >
                   Masuk di sini

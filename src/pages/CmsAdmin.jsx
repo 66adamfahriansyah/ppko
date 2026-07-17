@@ -5,7 +5,7 @@ function CmsAdmin() {
   const [data, setData] = useState(getCmsData());
   const [activeTab, setActiveTab] = useState('hero');
   const [successMsg, setSuccessMsg] = useState('');
-  
+
   // Temp states for Modals/Adding new items
   const [showKomoditasModal, setShowKomoditasModal] = useState(false);
   const [editingKomoditas, setEditingKomoditas] = useState(null);
@@ -197,8 +197,8 @@ function CmsAdmin() {
           <h1 className="text-2xl font-bold text-emerald-900 leading-tight">Kelola Tampilan Website</h1>
           <p className="text-xs text-gray-500 mt-1">Ubah konten landing page publik (Hero, Hasil Bumi, dan Marketplace) di sini.</p>
         </div>
-        
-        <button 
+
+        <button
           onClick={handleSaveAll}
           className="bg-[#0b5924] hover:bg-[#073c18] text-white py-2.5 px-6 rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-2 cursor-pointer"
         >
@@ -216,25 +216,25 @@ function CmsAdmin() {
 
       {/* Tabs Selector */}
       <div className="flex bg-white p-1 rounded-2xl border border-gray-150 text-xs font-bold max-w-2xl">
-        <button 
+        <button
           onClick={() => setActiveTab('hero')}
           className={`flex-1 py-3 rounded-xl transition-all ${activeTab === 'hero' ? 'bg-[#0b5924] text-white shadow-sm' : 'text-gray-500 hover:text-[#0b5924]'}`}
         >
           Hero Section
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('komoditas')}
           className={`flex-1 py-3 rounded-xl transition-all ${activeTab === 'komoditas' ? 'bg-[#0b5924] text-white shadow-sm' : 'text-gray-500 hover:text-[#0b5924]'}`}
         >
           Hasil Panen
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('marketplace')}
           className={`flex-1 py-3 rounded-xl transition-all ${activeTab === 'marketplace' ? 'bg-[#0b5924] text-white shadow-sm' : 'text-gray-500 hover:text-[#0b5924]'}`}
         >
           Marketplace
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('about')}
           className={`flex-1 py-3 rounded-xl transition-all ${activeTab === 'about' ? 'bg-[#0b5924] text-white shadow-sm' : 'text-gray-500 hover:text-[#0b5924]'}`}
         >
@@ -244,17 +244,17 @@ function CmsAdmin() {
 
       {/* TAB CONTENT */}
       <div className="bg-white rounded-3xl border border-gray-150 p-6 md:p-8 shadow-sm">
-        
+
         {/* 1. HERO TAB */}
         {activeTab === 'hero' && (
           <div className="space-y-6 max-w-3xl">
             <h3 className="text-base font-bold text-gray-800 border-b border-gray-100 pb-3">Edit Area Banner Utama</h3>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Judul Utama (Headline)</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={data.hero.title}
                   onChange={(e) => handleHeroChange('title', e.target.value)}
                   className="w-full bg-gray-50 border border-gray-150 rounded-xl py-3 px-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all font-semibold"
@@ -263,7 +263,7 @@ function CmsAdmin() {
 
               <div>
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Sub-judul (Sub-headline)</label>
-                <textarea 
+                <textarea
                   rows="3"
                   value={data.hero.subtitle}
                   onChange={(e) => handleHeroChange('subtitle', e.target.value)}
@@ -272,13 +272,24 @@ function CmsAdmin() {
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">URL Gambar Latar Belakang (Unsplash/Imgur Link)</label>
-                <input 
-                  type="text" 
-                  value={data.hero.bgImage}
-                  onChange={(e) => handleHeroChange('bgImage', e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-150 rounded-xl py-3 px-4 text-xs outline-none focus:border-[#0b5924] focus:bg-white transition-all text-blue-600 font-mono"
-                />
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Gambar Latar Belakang (Unggah PNG/JPG/JPEG)</label>
+                <label className="w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 hover:border-emerald-600 rounded-xl py-3 px-4 text-xs font-semibold text-gray-600 cursor-pointer bg-gray-50/50 hover:bg-white transition-all">
+                  <i className="bi bi-image text-emerald-700"></i>
+                  <span>Pilih File Gambar</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => handleHeroChange('bgImage', reader.result);
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
                 {data.hero.bgImage && (
                   <div className="mt-3 relative h-32 rounded-2xl overflow-hidden border border-gray-100 max-w-md">
                     <img src={data.hero.bgImage} alt="Hero Preview" className="w-full h-full object-cover" />
@@ -294,7 +305,7 @@ function CmsAdmin() {
           <div className="space-y-6">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <h3 className="text-base font-bold text-gray-800">Slider Hasil Bumi / Panen</h3>
-              <button 
+              <button
                 onClick={openAddKomoditas}
                 className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
               >
@@ -315,13 +326,13 @@ function CmsAdmin() {
                   </div>
 
                   <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200/50">
-                    <button 
+                    <button
                       onClick={() => openEditKomoditas(item)}
                       className="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 py-2 border border-emerald-100 rounded-xl text-[11px] font-bold transition cursor-pointer"
                     >
                       Edit
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDeleteKomoditas(item.id)}
                       className="flex-1 bg-white hover:bg-red-50 text-red-600 py-2 border border-red-100 rounded-xl text-[11px] font-bold transition cursor-pointer"
                     >
@@ -339,7 +350,7 @@ function CmsAdmin() {
           <div className="space-y-6">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <h3 className="text-base font-bold text-gray-800">Daftar Produk Dagangan Poktan</h3>
-              <button 
+              <button
                 onClick={openAddMarket}
                 className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
               >
@@ -353,7 +364,7 @@ function CmsAdmin() {
                   <div className="space-y-3">
                     <div className="relative">
                       <img src={prod.gambar} alt={prod.nama} className="w-full h-32 object-cover rounded-2xl" />
-                      <button 
+                      <button
                         onClick={() => toggleMarketStatus(prod.id)}
                         className={`absolute top-2 right-2 px-2.5 py-1 rounded-lg text-[9px] font-bold text-white shadow-sm ${prod.status ? 'bg-green-600' : 'bg-gray-500'}`}
                       >
@@ -371,13 +382,13 @@ function CmsAdmin() {
                   </div>
 
                   <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200/50">
-                    <button 
+                    <button
                       onClick={() => openEditMarket(prod)}
                       className="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 py-2 border border-emerald-100 rounded-xl text-[11px] font-bold transition cursor-pointer"
                     >
                       Edit
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDeleteMarket(prod.id)}
                       className="flex-1 bg-white hover:bg-red-50 text-red-600 py-2 border border-red-100 rounded-xl text-[11px] font-bold transition cursor-pointer"
                     >
@@ -397,7 +408,7 @@ function CmsAdmin() {
               <h3 className="text-base font-bold text-gray-800">Cerita Lahan Poktan (Tentang Kami)</h3>
               <div>
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Narasi Deskripsi Lahan</label>
-                <textarea 
+                <textarea
                   rows="4"
                   value={data.about.cerita}
                   onChange={(e) => handleAboutStoryChange(e.target.value)}
@@ -409,7 +420,7 @@ function CmsAdmin() {
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-2">
                 <h3 className="text-base font-bold text-gray-800">Direktori & Kontak Pengelola Lahan</h3>
-                <button 
+                <button
                   onClick={openAddContact}
                   className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
                 >
@@ -428,15 +439,15 @@ function CmsAdmin() {
                         <p><strong>WhatsApp:</strong> +{con.telepon}</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200/50">
-                      <button 
+                      <button
                         onClick={() => openEditContact(con)}
                         className="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 py-2 border border-emerald-100 rounded-xl text-[11px] font-bold transition cursor-pointer"
                       >
                         Edit
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDeleteContact(con.id)}
                         className="flex-1 bg-white hover:bg-red-50 text-red-600 py-2 border border-red-100 rounded-xl text-[11px] font-bold transition cursor-pointer"
                       >
@@ -460,29 +471,50 @@ function CmsAdmin() {
             <form onSubmit={handleSaveKomoditas} className="space-y-4">
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Periode Bulan/Tahun</label>
-                <input type="text" required placeholder="Contoh: Juli 2026" value={komForm.bulan} onChange={e => setKomForm({...komForm, bulan: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                <input type="text" required placeholder="Contoh: Juli 2026" value={komForm.bulan} onChange={e => setKomForm({ ...komForm, bulan: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-[10px] font-bold text-gray-400 block mb-1">Total Tonase</label>
-                  <input type="text" required placeholder="Contoh: 12.4 Ton" value={komForm.tonase} onChange={e => setKomForm({...komForm, tonase: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                  <input type="text" required placeholder="Contoh: 12.4 Ton" value={komForm.tonase} onChange={e => setKomForm({ ...komForm, tonase: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold text-gray-400 block mb-1">Luas Lahan</label>
-                  <input type="text" required placeholder="Contoh: 1.1 Hektar" value={komForm.luas} onChange={e => setKomForm({...komForm, luas: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                  <input type="text" required placeholder="Contoh: 1.1 Hektar" value={komForm.luas} onChange={e => setKomForm({ ...komForm, luas: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
                 </div>
               </div>
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Kualitas Panen</label>
-                <select value={komForm.kualitas} onChange={e => setKomForm({...komForm, kualitas: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]">
+                <select value={komForm.kualitas} onChange={e => setKomForm({ ...komForm, kualitas: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]">
                   <option>Super (Grade A)</option>
                   <option>Standar (Grade B)</option>
                   <option>Rendah (Grade C)</option>
                 </select>
               </div>
               <div>
-                <label className="text-[10px] font-bold text-gray-400 block mb-1">URL Link Gambar</label>
-                <input type="text" required value={komForm.gambar} onChange={e => setKomForm({...komForm, gambar: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924] font-mono text-[10px]" />
+                <label className="text-[10px] font-bold text-gray-400 block mb-1">Unggah Gambar Panen (PNG/JPG/JPEG)</label>
+                <label className="w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 hover:border-emerald-600 rounded-xl py-3 px-4 text-xs font-semibold text-gray-600 cursor-pointer bg-gray-50/50 hover:bg-white transition-all">
+                  <i className="bi bi-image text-emerald-700"></i>
+                  <span>Pilih File Gambar</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => setKomForm({ ...komForm, gambar: reader.result });
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+                {komForm.gambar && (
+                  <div className="mt-2 relative h-20 rounded-xl overflow-hidden border border-gray-100 max-w-xs">
+                    <img src={komForm.gambar} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
               </div>
               <div className="flex gap-3 pt-3">
                 <button type="button" onClick={() => setShowKomoditasModal(false)} className="flex-1 py-2.5 border rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-50 cursor-pointer">Batal</button>
@@ -501,33 +533,54 @@ function CmsAdmin() {
             <form onSubmit={handleSaveMarket} className="space-y-4">
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Nama Produk</label>
-                <input type="text" required placeholder="Contoh: Bawang Merah Konsumsi Super" value={marketForm.nama} onChange={e => setMarketForm({...marketForm, nama: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                <input type="text" required placeholder="Contoh: Bawang Merah Konsumsi Super" value={marketForm.nama} onChange={e => setMarketForm({ ...marketForm, nama: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-[10px] font-bold text-gray-400 block mb-1">Harga (Rupiah)</label>
-                  <input type="text" required placeholder="Contoh: 28.000" value={marketForm.harga} onChange={e => setMarketForm({...marketForm, harga: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                  <input type="text" required placeholder="Contoh: 28.000" value={marketForm.harga} onChange={e => setMarketForm({ ...marketForm, harga: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold text-gray-400 block mb-1">Satuan</label>
-                  <input type="text" required placeholder="Contoh: kg / kuintal" value={marketForm.satuan} onChange={e => setMarketForm({...marketForm, satuan: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                  <input type="text" required placeholder="Contoh: kg / kuintal" value={marketForm.satuan} onChange={e => setMarketForm({ ...marketForm, satuan: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
                 </div>
               </div>
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Deskripsi Produk</label>
-                <textarea rows="3" required placeholder="Jelaskan kualitas bawang merah..." value={marketForm.deskripsi} onChange={e => setMarketForm({...marketForm, deskripsi: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924] font-medium" />
+                <textarea rows="3" required placeholder="Jelaskan kualitas bawang merah..." value={marketForm.deskripsi} onChange={e => setMarketForm({ ...marketForm, deskripsi: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924] font-medium" />
               </div>
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Nama Petani / Kelompok Tani</label>
-                <input type="text" required placeholder="Contoh: Poktan Tani Makmur" value={marketForm.petani} onChange={e => setMarketForm({...marketForm, petani: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                <input type="text" required placeholder="Contoh: Poktan Tani Makmur" value={marketForm.petani} onChange={e => setMarketForm({ ...marketForm, petani: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
               </div>
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">No WhatsApp Petani (Gunakan Kode Negara '62')</label>
-                <input type="text" required placeholder="Contoh: 6281234567890" value={marketForm.whatsapp} onChange={e => setMarketForm({...marketForm, whatsapp: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                <input type="text" required placeholder="Contoh: 6281234567890" value={marketForm.whatsapp} onChange={e => setMarketForm({ ...marketForm, whatsapp: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
               </div>
               <div>
-                <label className="text-[10px] font-bold text-gray-400 block mb-1">URL Link Gambar</label>
-                <input type="text" required value={marketForm.gambar} onChange={e => setMarketForm({...marketForm, gambar: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924] font-mono text-[10px]" />
+                <label className="text-[10px] font-bold text-gray-400 block mb-1">Unggah Gambar Produk (PNG/JPG/JPEG)</label>
+                <label className="w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 hover:border-emerald-600 rounded-xl py-3 px-4 text-xs font-semibold text-gray-600 cursor-pointer bg-gray-50/50 hover:bg-white transition-all">
+                  <i className="bi bi-image text-emerald-700"></i>
+                  <span>Pilih File Gambar</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => setMarketForm({ ...marketForm, gambar: reader.result });
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </label>
+                {marketForm.gambar && (
+                  <div className="mt-2 relative h-20 rounded-xl overflow-hidden border border-gray-100 max-w-xs">
+                    <img src={marketForm.gambar} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
               </div>
               <div className="flex gap-3 pt-3">
                 <button type="button" onClick={() => setShowMarketModal(false)} className="flex-1 py-2.5 border rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-50 cursor-pointer">Batal</button>
@@ -546,19 +599,19 @@ function CmsAdmin() {
             <form onSubmit={handleSaveContact} className="space-y-4">
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Nama Kelompok Tani (Poktan)</label>
-                <input type="text" required placeholder="Contoh: Poktan Mulyo Jaya" value={contactForm.poktan} onChange={e => setContactForm({...contactForm, poktan: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                <input type="text" required placeholder="Contoh: Poktan Mulyo Jaya" value={contactForm.poktan} onChange={e => setContactForm({ ...contactForm, poktan: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
               </div>
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Nama Ketua Poktan</label>
-                <input type="text" required placeholder="Contoh: Bapak Mulyadi" value={contactForm.ketua} onChange={e => setContactForm({...contactForm, ketua: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                <input type="text" required placeholder="Contoh: Bapak Mulyadi" value={contactForm.ketua} onChange={e => setContactForm({ ...contactForm, ketua: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
               </div>
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Alamat Posko Lahan</label>
-                <input type="text" required placeholder="Contoh: Dusun Sajen RT 01 RW 01, Pacet" value={contactForm.alamat} onChange={e => setContactForm({...contactForm, alamat: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                <input type="text" required placeholder="Contoh: Dusun Sajen RT 01 RW 01, Pacet" value={contactForm.alamat} onChange={e => setContactForm({ ...contactForm, alamat: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
               </div>
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">No WhatsApp Kontak (Gunakan Kode Negara '62')</label>
-                <input type="text" required placeholder="Contoh: 6281234567890" value={contactForm.telepon} onChange={e => setContactForm({...contactForm, telepon: e.target.value})} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
+                <input type="text" required placeholder="Contoh: 6281234567890" value={contactForm.telepon} onChange={e => setContactForm({ ...contactForm, telepon: e.target.value })} className="w-full bg-gray-50 border rounded-xl py-2.5 px-3 text-xs outline-none focus:border-[#0b5924]" />
               </div>
               <div className="flex gap-3 pt-3">
                 <button type="button" onClick={() => setShowContactModal(false)} className="flex-1 py-2.5 border rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-50 cursor-pointer">Batal</button>

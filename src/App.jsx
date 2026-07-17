@@ -28,8 +28,16 @@ function AppContent() {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f3f6f3]">
-        <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#f3f6f3]">
+        <div className="flex flex-col items-center space-y-4">
+          {/* Modern Pulse/Loader Bar */}
+          <div className="flex space-x-2 justify-center items-center">
+            <div className="w-3 h-3 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="w-3 h-3 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-3 h-3 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+          </div>
+          <span className="text-xs font-semibold text-emerald-800 tracking-wider">Memuat Halaman...</span>
+        </div>
       </div>
     );
   }
