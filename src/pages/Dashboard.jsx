@@ -134,14 +134,6 @@ function Dashboard() {
         <NPKSensorCard data={data} isLoaded={isLoaded} />
         <DeviceMapCard />
       </div>
-
-      {/* Bottom Banner: Panel Kendali Manual */}
-      <ManualControlPanel
-        autoMode={data.control.autoMode}
-        manualActive={data.control.manualActive}
-        handleAutoModeChange={handleAutoModeChange}
-        handleManualModeToggle={handleManualModeToggle}
-      />
     </div>
   );
 }

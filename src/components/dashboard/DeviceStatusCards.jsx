@@ -8,7 +8,7 @@ function DeviceStatusCards({ data, isLoaded }) {
   const rainIntensity = hasRainData ? data.rain.intensity : 0;
   
   const lightTrapStatusText = hasLightTrapData 
-    ? (data.lightTrap.active ? 'NYALA (Otomatis)' : 'MATI') 
+    ? (data.lightTrap.active ? `NYALA (${data.lightTrap.triggerMode})` : 'MATI') 
     : 'Menunggu data';
   const lightTrapTrigger = hasLightTrapData ? data.lightTrap.triggerMode : "Menunggu data";
   const lightTrapDurationText = hasLightTrapData ? `${data.lightTrap.duration} Jam` : "Menunggu data";
@@ -55,7 +55,7 @@ function DeviceStatusCards({ data, isLoaded }) {
             <h5 className="text-sm font-semibold text-gray-600 flex items-center">
               <i className="bi bi-bug-fill text-emerald-600 mr-2 text-base"></i>Status Light Trap
             </h5>
-            <span className={`w-2.5 h-2.5 rounded-full ${isLoaded && data.lightTrap.active ? 'bg-emerald-600 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500'}`}></span>
+            <span className={`w-2 h-2 rounded-full ${isLoaded && data.lightTrap.active ? 'bg-emerald-600 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500'}`}></span>
           </div>
 
           <div className="flex items-center py-2 mb-4">
