@@ -13,12 +13,12 @@ function AIInsightCard({ predictions }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-medium mt-2">
         <div className="bg-white/10 p-4 rounded-2xl space-y-2 border border-white/5">
-          <span className="text-[10px] text-emerald-200 uppercase font-bold tracking-wider block">1. SOLAR PANEL & BATERAI</span>
-          <p className="leading-relaxed text-emerald-50">{predictions.batteryDrop}</p>
+          <span className="text-[10px] text-emerald-200 uppercase font-bold tracking-wider block">1. SENSOR AIR HUJAN</span>
+          <p className="leading-relaxed text-emerald-50">{predictions.rainStatus}</p>
         </div>
         <div className="bg-white/10 p-4 rounded-2xl space-y-2 border border-white/5">
-          <span className="text-[10px] text-emerald-200 uppercase font-bold tracking-wider block">2. SIKLUS HAMA PERANGKAP</span>
-          <p className="leading-relaxed text-emerald-50">{predictions.pestPeak}</p>
+          <span className="text-[10px] text-emerald-200 uppercase font-bold tracking-wider block">2. STATUS LIGHT TRAP</span>
+          <p className="leading-relaxed text-emerald-50">{predictions.lightTrapStatus}</p>
         </div>
         <div className="bg-white/10 p-4 rounded-2xl space-y-2 border border-white/5">
           <span className="text-[10px] text-emerald-200 uppercase font-bold tracking-wider block">3. KESUBURAN TANAH NPK</span>

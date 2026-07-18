@@ -23,23 +23,32 @@ function SensorLogsTable({ sensorLogs, handleExportCSV }) {
             </tr>
           </thead>
           <tbody>
-            {sensorLogs.map((log, index) => (
-              <tr key={index} className="border-b border-gray-50 hover:bg-gray-50/50 transition">
-                <td className="py-3.5 px-2 font-semibold text-gray-600">{log.id}</td>
-                <td className="py-3.5 px-2 text-gray-500 font-medium">{log.time}</td>
-                <td className="py-3.5 px-2 text-gray-700 font-medium">{log.type}</td>
-                <td className="py-3.5 px-2 text-center">
-                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                    log.status === 'KRITIS' ? 'bg-red-50 text-red-600 border border-red-100' :
-                    log.status === 'NORMAL' ? 'bg-gray-50 text-gray-600 border border-gray-100' :
-                    'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                  }`}>
-                    {log.status}
-                  </span>
+            {sensorLogs.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="py-8 text-center text-gray-400 font-semibold">
+                  <i className="bi bi-cpu text-lg block mb-1 text-gray-300"></i>
+                  Belum ada data sensor masuk
                 </td>
-                <td className="py-3.5 px-2 text-right font-bold text-gray-800">{log.value}</td>
               </tr>
-            ))}
+            ) : (
+              sensorLogs.map((log, index) => (
+                <tr key={index} className="border-b border-gray-50 hover:bg-gray-50/50 transition">
+                  <td className="py-3.5 px-2 font-semibold text-gray-600">{log.id}</td>
+                  <td className="py-3.5 px-2 text-gray-500 font-medium">{log.time}</td>
+                  <td className="py-3.5 px-2 text-gray-700 font-medium">{log.type}</td>
+                  <td className="py-3.5 px-2 text-center">
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                      log.status === 'KRITIS' ? 'bg-red-50 text-red-600 border border-red-100' :
+                      log.status === 'NORMAL' ? 'bg-gray-50 text-gray-600 border border-gray-100' :
+                      'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                    }`}>
+                      {log.status}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-2 text-right font-bold text-gray-800">{log.value}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

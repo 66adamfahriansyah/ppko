@@ -136,8 +136,8 @@ export function useDeviceData() {
         solarSurplus: '+10.3 kWh'
       },
       predictions: {
-        batteryDrop: 'Baterai diperkirakan turun ke 85% pada jam 22:00 akibat mendung sore ini.',
-        pestPeak: 'Siklus puncak hama diprediksi 3 hari lagi. Nyalakan Light Trap lebih awal.',
+        rainStatus: 'Potensi hujan terdeteksi dalam 6 jam ke depan. Pastikan sistem drainase sawah berfungsi dengan baik.',
+        lightTrapStatus: 'Light Trap dalam kondisi aktif. Disarankan tetap dinyalakan pada malam hari untuk pengendalian hama secara mekanis.',
         soilAdvice: 'Kadar Kalium (K) menurun. Disarankan pemupukan NPK tambahan minggu depan.'
       }
     };

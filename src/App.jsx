@@ -3,7 +3,7 @@ import './App.css';
 import MainLayout from './components/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Trends from './pages/Trends';
-import ManualControl from './pages/ManualControl';
+import { useState } from 'react';
 import Education from './pages/Education';
 import Settings from './pages/Settings';
 import LoginRegister from './pages/LoginRegister';
@@ -81,34 +81,11 @@ function AppContent() {
 
 
 
-          {/* Protected Pages (Admin Only) */}
-          <Route 
-            path="manual-control" 
-            element={
-              <ProtectedRoute>
-                {user?.role === 'admin' ? (
-                  <ManualControl />
-                ) : (
-                  <div className="bg-white p-8 rounded-2xl border border-gray-150 text-center text-sm font-bold text-red-500">
-                    <i className="bi bi-shield-lock-fill text-3xl block mb-2 text-red-400"></i>
-                    Akses Ditolak: Halaman ini hanya dapat diakses oleh Admin.
-                  </div>
-                )}
-              </ProtectedRoute>
-            } 
-          />
           <Route 
             path="education" 
             element={
               <ProtectedRoute>
-                {user?.role === 'admin' ? (
-                  <Education />
-                ) : (
-                  <div className="bg-white p-8 rounded-2xl border border-gray-150 text-center text-sm font-bold text-red-500">
-                    <i className="bi bi-shield-lock-fill text-3xl block mb-2 text-red-400"></i>
-                    Akses Ditolak: Halaman ini hanya dapat diakses oleh Admin.
-                  </div>
-                )}
+                <Education />
               </ProtectedRoute>
             } 
           />

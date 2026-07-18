@@ -89,6 +89,19 @@ function Sidebar({ user, onLogout, isOpen, onClose }) {
               <i className="bi bi-graph-up mr-3"></i> Trends
             </NavLink>
 
+            <NavLink 
+              to="/admin/education" 
+              className={({ isActive }) => 
+                `flex items-center px-4 py-3 text-sm font-semibold rounded-lg transition-all ${
+                  isActive 
+                    ? 'bg-emerald-50 text-emerald-700 border-r-4 border-emerald-700' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-emerald-700'
+                }`
+              }
+            >
+              <i className="bi bi-journal-bookmark mr-3"></i> Education
+            </NavLink>
+
             {user && user.role === 'user' && (
               <NavLink 
                 to="/admin/toko" 
@@ -108,32 +121,6 @@ function Sidebar({ user, onLogout, isOpen, onClose }) {
             
             {user?.role === 'admin' && (
               <>
-                <NavLink 
-                  to="/admin/manual-control" 
-                  className={({ isActive }) => 
-                    `flex items-center px-4 py-3 text-sm font-semibold rounded-lg transition-all ${
-                      isActive 
-                        ? 'bg-emerald-50 text-emerald-700 border-r-4 border-emerald-700' 
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-emerald-700'
-                    }`
-                  }
-                >
-                  <i className="bi bi-pencil-square mr-3"></i> Manual Input
-                </NavLink>
-
-                <NavLink 
-                  to="/admin/education" 
-                  className={({ isActive }) => 
-                    `flex items-center px-4 py-3 text-sm font-semibold rounded-lg transition-all ${
-                      isActive 
-                        ? 'bg-emerald-50 text-emerald-700 border-r-4 border-emerald-700' 
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-emerald-700'
-                    }`
-                  }
-                >
-                  <i className="bi bi-journal-bookmark mr-3"></i> Education
-                </NavLink>
-
                 <NavLink 
                   to="/admin/cms" 
                   className={({ isActive }) => 

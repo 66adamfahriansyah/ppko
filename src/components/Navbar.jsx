@@ -28,7 +28,6 @@ function Navbar({ user, onLogout, onToggleSidebar }) {
              location.pathname === '/admin/trends' ? 'Tren & Analitik' : 
              location.pathname === '/admin/toko' ? 'Kelola Toko Saya' :
              location.pathname.startsWith('/admin/product/') ? 'Detail Produk' :
-             location.pathname === '/admin/manual-control' ? 'Kendali Manual' :
              location.pathname === '/admin/education' ? 'Materi Edukasi' : 
              location.pathname === '/admin/cms' ? 'Kelola Website (CMS)' : 'Pengaturan Sistem'}
 

@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import monitoringRoutes from './routes/monitoringRoutes.js';
 import logsRoutes from './routes/logsRoutes.js';
 import productRoutes from './routes/productRoutes.js';
+import educationRoutes from './routes/educationRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
 import { initializeMqttService } from './services/mqttService.js';
 
@@ -27,6 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/monitoring', monitoringRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/education', educationRoutes);
 
 // Error Handler
 app.use(errorHandler);

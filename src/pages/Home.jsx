@@ -219,8 +219,14 @@ function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-end mb-10 animate-on-scroll animate-fade-up">
             <div>
-              <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1">Hasil Pertanian</span>
-              <h2 className="text-3xl font-extrabold text-emerald-950">Komoditas Utama Bawang Merah</h2>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="block w-8 h-px bg-emerald-700"></span>
+                <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">Hasil Pertanian</span>
+              </div>
+              <h2 className="text-3xl font-extrabold text-emerald-950 leading-tight" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+                Komoditas Utama{' '}
+                <em style={{ color: '#4a7c59', fontStyle: 'italic', fontWeight: '700' }}>Bawang Merah</em>
+              </h2>
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -288,8 +294,15 @@ function Home() {
       <section id="marketplace" className="py-20 px-6 md:px-12 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-xl mx-auto mb-16 animate-on-scroll animate-fade-up">
-            <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1">Dukung Petani Lokal</span>
-            <h2 className="text-3xl font-extrabold text-emerald-950">Marketplace Anggota Tani</h2>
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <span className="block w-8 h-px bg-emerald-700"></span>
+              <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">Dukung Petani Lokal</span>
+              <span className="block w-8 h-px bg-emerald-700"></span>
+            </div>
+            <h2 className="text-3xl font-extrabold text-emerald-950 leading-tight" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+              Marketplace{' '}
+              <em style={{ color: '#4a7c59', fontStyle: 'italic', fontWeight: '700' }}>Kelompok Tani</em>
+            </h2>
             <p className="text-sm text-gray-500 mt-2">Beli langsung produk bawang merah terbaik tanpa perantara. Hubungi petani kami langsung via WhatsApp.</p>
           </div>
 
@@ -410,9 +423,15 @@ function Home() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
           <div className="lg:col-span-6 space-y-6 animate-on-scroll animate-fade-left">
-            <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest block mb-1">Tentang Kelompok Tani</span>
-            <h2 className="text-3xl font-extrabold text-emerald-950 leading-tight">Mewujudkan Kemandirian Pertanian Modern</h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
+            <div className="flex items-center gap-3 mb-2">
+              <span className="block w-8 h-px bg-emerald-700"></span>
+              <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">Tentang Kelompok Tani</span>
+            </div>
+            <h2 className="text-3xl font-extrabold text-emerald-950 leading-tight mb-4" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+              Mewujudkan Kemandirian Pertanian{' '}
+              <em style={{ color: '#4a7c59', fontStyle: 'italic', fontWeight: '700' }}>Modern</em>
+            </h2>
+            <p className="text-base text-gray-700 leading-relaxed">
               {cmsData.about.cerita}
             </p>
             <div className="p-5 bg-white border border-emerald-50 rounded-3xl flex items-center gap-4 shadow-sm max-w-md">

@@ -5,7 +5,7 @@ export async function initializeDatabase() {
   try {
     const connection = await pool.getConnection();
     console.log('✅ Terkoneksi ke database MySQL (XAMPP) dengan sukses.');
-    
+
     // Buat tabel-tabel monitoring jika belum ada
     await connection.query(`
       CREATE TABLE IF NOT EXISTS plts_monitoring (
@@ -125,7 +125,7 @@ export async function initializeDatabase() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    
+
     // Tambah kolom user_id ke tabel manual_logs jika belum ada (backward compatibility)
     try {
       await connection.query('ALTER TABLE manual_logs ADD COLUMN user_id INT NULL');
@@ -133,8 +133,8 @@ export async function initializeDatabase() {
     try {
       await connection.query('ALTER TABLE manual_logs ADD CONSTRAINT fk_manual_logs_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL');
     } catch (e) { /* ignore if constraint exists */ }
-    
-    
+
+
     // Buat tabel products jika belum ada (e-commerce anggota tani)
     await connection.query(`
       CREATE TABLE IF NOT EXISTS products (
@@ -158,8 +158,32 @@ export async function initializeDatabase() {
       await connection.query('ALTER TABLE products MODIFY COLUMN image LONGTEXT NULL');
     } catch (e) { /* ignore */ }
 
+    // Buat tabel education_books jika belum ada
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS education_books (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        file_link TEXT NOT NULL,
+        cover_image LONGTEXT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
 
-    
+    // Seed default education books jika tabel kosong
+    const [bookRows] = await connection.query('SELECT COUNT(*) as count FROM education_books');
+    if (bookRows[0].count === 0) {
+      await connection.query(`
+        INSERT INTO education_books (title, description, file_link, cover_image) VALUES 
+        ('Buku Panduan E-BIO PENS v1.0', 'Panduan teknis pengoperasian alat monitoring sawah berbasis IoT E-BIO PENS untuk petani.', 'https://example.com/panduan-ebio.pdf', ''),
+        ('Budidaya Padi Organik Ramah Lingkungan', 'Buku panduan mengenai budidaya padi secara organik, mengurangi bahan kimia, dan meningkatkan kesehatan tanah.', 'https://example.com/padi-organik.pdf', ''),
+        ('Pengendalian Hama Terpadu (PHT)', 'Konsep pengendalian hama menggunakan Light Trap mekanis untuk meminimalkan kerugian hasil panen.', 'https://example.com/pht-light-trap.pdf', '')
+      `);
+      console.log('🌱 Seeded default education books.');
+    }
+
+
+
     // Seed default logs jika tabel manual_logs kosong
     const [logRows] = await connection.query('SELECT COUNT(*) as count FROM manual_logs');
     if (logRows[0].count === 0) {
@@ -172,7 +196,7 @@ export async function initializeDatabase() {
       `);
       console.log('🌱 Seeded default manual logs.');
     }
-    
+
     // Buat admin bawaan jika tabel users kosong
     const [rows] = await connection.query('SELECT COUNT(*) as count FROM users');
     if (rows[0].count === 0) {
@@ -184,7 +208,7 @@ export async function initializeDatabase() {
       );
       console.log('🌱 Seeded default admin: admin@ebio.com / admin123');
     }
-    
+
     connection.release();
   } catch (err) {
     console.error('❌ Gagal terkoneksi atau menginisialisasi database MySQL:', err.message);

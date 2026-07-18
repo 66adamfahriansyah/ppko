@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useDeviceData } from '../hooks/useDeviceData';
 import MetricCards from '../components/trends/MetricCards';
-import PestChartCard from '../components/trends/PestChartCard';
-import SolarGaugeCard from '../components/trends/SolarGaugeCard';
 import NPKTrendCard from '../components/trends/NPKTrendCard';
 import AIInsightCard from '../components/trends/AIInsightCard';
 import SensorLogsTable from '../components/trends/SensorLogsTable';
@@ -12,13 +10,7 @@ function Trends() {
   const [npkTab, setNpkTab] = useState('all'); // all, nitrogen, phosphor, potassium
 
   // Mock data for sensor log
-  const sensorLogs = [
-    { id: 'EB-SN-001', time: 'Tadi, 14:20', type: 'Hama Terdeteksi', status: 'KRITIS', value: '12 Unit' },
-    { id: 'EB-SN-003', time: 'Tadi, 13:45', type: 'Kelembapan', status: 'NORMAL', value: '68%' },
-    { id: 'EB-SN-002', time: 'Tadi, 12:05', type: 'Arus Panel', status: 'OPTIMAL', value: '4.2A' },
-    { id: 'EB-SN-001', time: 'Kemarin, 21:10', type: 'Light Trap Trigger', status: 'OPTIMAL', value: 'ON (10h)' },
-    { id: 'EB-SN-004', time: 'Kemarin, 08:30', type: 'Suhu Udara', status: 'NORMAL', value: '28.5°C' }
-  ];
+  const sensorLogs = [];
 
   // Function to export table to CSV
   const handleExportCSV = () => {
@@ -70,12 +62,6 @@ function Trends() {
 
       {/* KPI METRIC CARDS */}
       <MetricCards trendData={trendData} />
-
-      {/* ROW CHARTS 1 (Hama Area Chart & Solar Gauge) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <PestChartCard pestsData={trendData.pests} />
-        <SolarGaugeCard summary={trendData.summary} />
-      </div>
 
       {/* ROW CHARTS 2 (Soil Nutrients NPK Trend Chart with Side Details) */}
       <NPKTrendCard npkData={trendData.npk} npkTab={npkTab} setNpkTab={setNpkTab} />

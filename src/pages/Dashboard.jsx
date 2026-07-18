@@ -104,7 +104,7 @@ function Dashboard() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <button 
+            <button
               onClick={() => navigate('/')}
               className="group p-2 text-gray-500 hover:text-emerald-700 bg-white hover:bg-emerald-50 rounded-xl border border-gray-200 hover:border-emerald-200 transition-all flex items-center justify-center cursor-pointer shadow-sm"
               title="Kembali ke Landing Page"
@@ -118,7 +118,7 @@ function Dashboard() {
             Demplot Desa Sajen, Pacet - Lokasi Strategis Elevasi 600mdpl
           </p>
         </div>
-        <button 
+        <button
           onClick={handleRefresh}
           className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition rounded-full flex items-center gap-2 py-2 px-4 text-xs font-semibold"
         >
@@ -137,7 +137,7 @@ function Dashboard() {
       </div>
 
       {/* Bottom Banner: Panel Kendali Manual */}
-      <ManualControlPanel 
+      <ManualControlPanel
         autoMode={data.control.autoMode}
         manualActive={data.control.manualActive}
         handleAutoModeChange={handleAutoModeChange}
