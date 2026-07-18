@@ -388,7 +388,7 @@ function Home() {
                       <h3 className="text-xs sm:text-sm font-extrabold text-gray-900 group-hover:text-[#0b5924] transition-colors line-clamp-1">{prod.name}</h3>
                       <div className="text-emerald-800 text-xs sm:text-sm font-black mt-0.5 sm:mt-1">{prod.price}</div>
                     </div>
-
+                    <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-2 font-medium">{prod.description}</p>
                     <div className="space-y-1.5 pt-2.5 border-t border-gray-100 text-[10px] sm:text-xs text-gray-600 font-semibold">
                       <div className="flex items-center gap-1 sm:gap-2">
                         <i className="bi bi-people-fill text-xs sm:text-base text-emerald-600"></i>
@@ -397,11 +397,16 @@ function Home() {
                           <span className="text-[8px] sm:text-[10px] text-gray-400 font-bold ml-0.5">({prod.owner_username})</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-1 sm:gap-2">
-                        <i className="bi bi-geo-alt-fill text-xs sm:text-base text-emerald-600"></i>
-                        <span className="truncate text-gray-500 font-medium">{prod.address}</span>
-                      </div>
                     </div>
+                    <a
+                      href={`https://wa.me/${prod.owner_phone || prod.contact}?text=Halo%20${encodeURIComponent(prod.owner_name || 'Petani')},%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(prod.name)}.`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="block w-full text-center bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-2 rounded-xl text-[10px] sm:text-xs font-bold transition"
+                    >
+                      <i className="bi bi-whatsapp mr-1"></i> Hubungi via WA
+                    </a>
                   </div>
                 </div>
               );

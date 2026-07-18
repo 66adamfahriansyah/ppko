@@ -5,7 +5,7 @@ class ProductRepository {
 
   async findAllActive() {
     const [rows] = await this.pool.query(
-      'SELECT p.*, u.username as owner_username, u.nama_lengkap as owner_name, u.asal_poktan as owner_poktan FROM products p JOIN users u ON p.user_id = u.id WHERE p.is_active = 1 AND u.is_verified = 1 ORDER BY p.created_at DESC'
+      'SELECT p.*, u.username as owner_username, u.nama_lengkap as owner_name, u.asal_poktan as owner_poktan, u.no_telp as owner_phone FROM products p JOIN users u ON p.user_id = u.id WHERE p.is_active = 1 AND u.is_verified = 1 ORDER BY p.created_at DESC'
     );
     return rows;
   }
