@@ -439,8 +439,8 @@ function Home() {
                 <i className="bi bi-award-fill"></i>
               </div>
               <div>
-                <h4 className="text-sm font-bold text-emerald-950">Lahan Terakreditasi IoT</h4>
-                <p className="text-[11px] text-gray-400 mt-0.5">Pemantauan otomatis & ramah lingkungan berbasis riset PPK Ormawa E-BIO PENS.</p>
+                <h4 className="text-sm font-bold text-emerald-950">Lahan Teintegrasi IoT</h4>
+                <p className="text-[11px] text-gray-400 mt-0.5">Pemantauan otomatis & ramah lingkungan melalui penerapan teknologi light trap tenaga surya bersama PPK Ormawa E-BIO PENS.</p>
               </div>
             </div>
           </div>
