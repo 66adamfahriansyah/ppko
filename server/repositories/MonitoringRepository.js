@@ -54,10 +54,10 @@ class MonitoringRepository {
       await connection.beginTransaction();
 
       if (plts) {
-        const { voltage, current, battery } = plts;
+        const { current, battery } = plts;
         await connection.query(
-          'UPDATE plts_monitoring SET voltage = ?, current = ?, battery = ? WHERE id = 1',
-          [voltage, current, battery]
+          'UPDATE plts_monitoring SET current = ?, battery = ? WHERE id = 1',
+          [current, battery]
         );
       }
 

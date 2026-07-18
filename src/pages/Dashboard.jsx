@@ -8,7 +8,6 @@ import ManualControlPanel from '../components/dashboard/ManualControlPanel';
 
 const defaultData = {
   plts: {
-    voltage: 0.0,
     current: 0.0,
     battery: 0
   },
@@ -135,14 +134,6 @@ function Dashboard() {
         <NPKSensorCard data={data} isLoaded={isLoaded} />
         <DeviceMapCard />
       </div>
-
-      {/* Bottom Banner: Panel Kendali Manual */}
-      <ManualControlPanel
-        autoMode={data.control.autoMode}
-        manualActive={data.control.manualActive}
-        handleAutoModeChange={handleAutoModeChange}
-        handleManualModeToggle={handleManualModeToggle}
-      />
     </div>
   );
 }

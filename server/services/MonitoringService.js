@@ -8,7 +8,7 @@ class MonitoringService {
   async getData() {
     const raw = await this.monitoringRepository.getAllSensorData();
 
-    const plts = raw.plts || { voltage: 0.0, current: 0.0, battery: 0 };
+    const plts = raw.plts || { current: 0.0, battery: 0 };
     const rain = raw.rain || { status: '-', detection: '-', intensity: 0 };
     const lightTrap = raw.lightTrap || { active: 0, trigger_mode: '-', duration: 0 };
     const npk = raw.npk || { nitrogen: 0, phosphor: 0, potassium: 0, status: '-' };
@@ -16,7 +16,6 @@ class MonitoringService {
 
     return {
       plts: {
-        voltage: parseFloat(plts.voltage),
         current: parseFloat(plts.current),
         battery: parseInt(plts.battery)
       },
