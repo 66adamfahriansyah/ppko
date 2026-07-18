@@ -8,7 +8,6 @@ import ManualControlPanel from '../components/dashboard/ManualControlPanel';
 
 const defaultData = {
   plts: {
-    voltage: 0.0,
     current: 0.0,
     battery: 0
   },

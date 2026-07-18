@@ -9,16 +9,16 @@ export function initializeMqttService() {
   const MQTT_BROKER = process.env.MQTT_BROKER || 'mqtt://broker.emqx.io:1883';
   const MQTT_TOPIC = process.env.MQTT_TOPIC || 'lighttrap/gateway/telemetry';
 
-  console.log(`🌐 Mencoba menyambung ke MQTT Broker: ${MQTT_BROKER}...`);
+  console.log(`Mencoba menyambung ke MQTT Broker: ${MQTT_BROKER}...`);
   const client = mqtt.connect(MQTT_BROKER);
 
   client.on('connect', () => {
-    console.log(`✅ Terkoneksi ke MQTT Broker: ${MQTT_BROKER}`);
+    console.log(`Terkoneksi ke MQTT Broker: ${MQTT_BROKER}`);
     client.subscribe(MQTT_TOPIC, (err) => {
       if (!err) {
-        console.log(`📡 Berhasil subscribe ke topik: ${MQTT_TOPIC}`);
+        console.log(`Berhasil subscribe ke topik: ${MQTT_TOPIC}`);
       } else {
-        console.error(`❌ Gagal subscribe ke topik: ${MQTT_TOPIC}`, err.message);
+        console.error(`Gagal subscribe ke topik: ${MQTT_TOPIC}`, err.message);
       }
     });
   });
@@ -27,20 +27,23 @@ export function initializeMqttService() {
     if (topic === MQTT_TOPIC) {
       try {
         const payload = JSON.parse(message.toString());
-        console.log(`📥 MQTT Message Received: type=${payload.type}`);
+        console.log(`MQTT Message Received: type=${payload.type}`);
 
-        if (payload.type === 'telemetry') {
+        const isTelemetry = payload.type === 'telemetry' || payload.aggregate !== undefined || payload.nodes !== undefined;
+
+        if (isTelemetry) {
           const aggregate = payload.aggregate || {};
           const nodes = payload.nodes || [];
 
-          // a. Hitung rata-rata voltase baterai dari node yang online
+          // a. Hitung rata-rata voltase baterai untuk battery percentage
           let avgVoltage = 0.0;
           let onlineNodeCount = 0;
           if (nodes.length > 0) {
             let sumMilliVolt = 0;
             nodes.forEach(n => {
-              if (n.online && n.batteryMilliVolt !== null && n.batteryMilliVolt > 0) {
-                sumMilliVolt += n.batteryMilliVolt;
+              const mv = n.batteryMilliVolt ?? n.battery_mv ?? n.voltage ?? 0;
+              if (n.online && mv > 0) {
+                sumMilliVolt += mv;
                 onlineNodeCount++;
               }
             });
@@ -58,37 +61,40 @@ export function initializeMqttService() {
           const maxV = 4.2;
           const batteryPercent = Math.min(100, Math.max(0, Math.round(((avgVoltage - minV) / (maxV - minV)) * 100)));
 
+          // Hilangkan voltage dari plts, hanya simpan current & battery
           const plts = {
-            voltage: parseFloat(avgVoltage.toFixed(2)),
             current: onlineNodeCount > 0 ? 0.2 : 0.0, // dummy charging current atau load kecil
             battery: batteryPercent
           };
 
-          // b. Hujan
-          const rainCondition = aggregate.rainCondition || 'BELUM ADA DATA';
+          // b. Hujan (mendukung flat dan nested objek dari ESP32)
+          const rainObj = aggregate.rain || {};
+          const rainCondition = aggregate.rainCondition || rainObj.condition || aggregate.rain_condition || 'BELUM ADA DATA';
           
           let mappedStatus = '-';
-          if (rainCondition === 'HUJAN' || rainCondition === 'LEMBAP/GERIMIS') {
-            mappedStatus = 'Basah';
-          } else if (rainCondition === 'TIDAK HUJAN') {
-            mappedStatus = 'Kering';
+          if (rainCondition === 'HUJAN' || rainCondition === 'LEMBAP/GERIMIS' || rainCondition === 'Basah' || rainCondition === 'Rain') {
+            mappedStatus = 'BASAH';
+          } else if (rainCondition === 'TIDAK HUJAN' || rainCondition === 'Kering' || rainCondition === 'No Rain') {
+            mappedStatus = 'KERING';
           }
           
           let mappedDetection = '-';
-          if (rainCondition === 'HUJAN' || rainCondition === 'LEMBAP/GERIMIS') {
-            mappedDetection = 'Hujan';
-          } else if (rainCondition === 'TIDAK HUJAN') {
-            mappedDetection = 'Tidak';
+          if (rainCondition === 'HUJAN' || rainCondition === 'LEMBAP/GERIMIS' || rainCondition === 'Basah' || rainCondition === 'Rain') {
+            mappedDetection = 'HUJAN';
+          } else if (rainCondition === 'TIDAK HUJAN' || rainCondition === 'Kering' || rainCondition === 'No Rain') {
+            mappedDetection = 'TIDAK HUJAN';
           }
 
+          const rainIntensityRaw = aggregate.rainFuzzyScore ?? aggregate.rainInputPercent ?? rainObj.val ?? rainObj.intensity ?? 0;
           const rain = {
             status: mappedStatus,
             detection: mappedDetection,
-            intensity: Math.round(aggregate.rainFuzzyScore ?? aggregate.rainInputPercent ?? 0)
+            intensity: Math.round(rainIntensityRaw)
           };
 
           // c. Light Trap (Relay status)
-          const relayOnCount = aggregate.relayOnCount || 0;
+          const relayObj = aggregate.relay || {};
+          const relayOnCount = aggregate.relayOnCount ?? relayObj.active_count ?? aggregate.relay_on_count ?? 0;
           
           // Ambil status control terbaru dari db untuk triggerMode
           let triggerMode = 'Otomatis';
@@ -107,10 +113,11 @@ export function initializeMqttService() {
             duration: 4 // default duration
           };
 
-          // d. NPK
-          const n = Math.round(aggregate.nitrogenMgKg ?? 0);
-          const p = Math.round(aggregate.phosphorusMgKg ?? 0);
-          const k = Math.round(aggregate.potassiumMgKg ?? 0);
+          // d. NPK (mendukung flat dan nested objek dari ESP32)
+          const npkObj = aggregate.npk || {};
+          const n = Math.round(aggregate.nitrogenMgKg ?? npkObj.n ?? aggregate.nitrogen ?? 0);
+          const p = Math.round(aggregate.phosphorusMgKg ?? npkObj.p ?? aggregate.phosphorus ?? 0);
+          const k = Math.round(aggregate.potassiumMgKg ?? npkObj.k ?? aggregate.potassium ?? 0);
           
           let npkStatus = 'Normal';
           if (n === 0 && p === 0 && k === 0) {
@@ -129,16 +136,16 @@ export function initializeMqttService() {
           };
 
           // Simpan ke database
-          console.log('💾 [MQTT] Menyimpan telemetry ke database...');
+          console.log('[MQTT] Menyimpan telemetry ke database...');
           await monitoringService.updateSensors({ plts, rain, lightTrap, npk });
         }
       } catch (error) {
-        console.error('❌ [MQTT] Gagal memproses telemetry:', error.message);
+        console.error('[MQTT] Gagal memproses telemetry:', error.message);
       }
     }
   });
 
   client.on('error', (err) => {
-    console.error('❌ MQTT Connection Error:', err.message);
+    console.error('MQTT Connection Error:', err.message);
   });
 }

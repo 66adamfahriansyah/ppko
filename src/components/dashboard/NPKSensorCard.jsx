@@ -1,6 +1,6 @@
 function NPKSensorCard({ data, isLoaded }) {
-  // Pengecekan apakah data dari MQTT sudah masuk (tidak lagi bernilai default '-' atau 'Menunggu')
-  const hasNpkData = isLoaded && data.npk.status !== '-' && data.npk.status !== 'Menunggu' && (data.npk.nitrogen > 0 || data.npk.phosphor > 0 || data.npk.potassium > 0);
+  // Pengecekan apakah data dari database sudah siap dan bukan status awal 'Menunggu'
+  const hasNpkData = isLoaded && data.npk.status !== 'Menunggu';
 
   const statusLahan = hasNpkData ? data.npk.status : "Menunggu data";
   const nitrogen = hasNpkData ? `${data.npk.nitrogen} mg/kg` : "Menunggu data";
