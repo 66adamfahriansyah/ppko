@@ -166,9 +166,20 @@ export async function initializeDatabase() {
         description TEXT NOT NULL,
         file_link TEXT NOT NULL,
         cover_image LONGTEXT NULL,
+        type VARCHAR(50) DEFAULT 'panduan',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    // Migrasi kolom type ke tabel education_books jika belum ada
+    try {
+      await connection.query("ALTER TABLE education_books ADD COLUMN type VARCHAR(50) DEFAULT 'panduan'");
+    } catch (e) { /* ignore if column exists */ }
+
+    // Migrasi kolom cover_image menjadi LONGTEXT jika masih TEXT
+    try {
+      await connection.query('ALTER TABLE education_books MODIFY COLUMN cover_image LONGTEXT NULL');
+    } catch (e) { /* ignore */ }
 
     // Seed default education books jika tabel kosong
     const [bookRows] = await connection.query('SELECT COUNT(*) as count FROM education_books');

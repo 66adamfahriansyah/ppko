@@ -22,7 +22,7 @@ class EducationController {
         return next(new AppError('Akses ditolak: Hanya admin yang dapat menambahkan buku panduan', 403));
       }
 
-      const { title, description, file_link, cover_image } = req.body;
+      const { title, description, file_link, cover_image, type } = req.body;
       if (!title || !description || !file_link) {
         return next(new AppError('Judul, deskripsi, dan link file harus diisi', 400));
       }
@@ -31,7 +31,8 @@ class EducationController {
         title,
         description,
         file_link,
-        cover_image: cover_image || ''
+        cover_image: cover_image || '',
+        type: type || 'panduan'
       });
 
       res.json({
@@ -51,7 +52,7 @@ class EducationController {
       }
 
       const id = parseInt(req.params.id);
-      const { title, description, file_link, cover_image } = req.body;
+      const { title, description, file_link, cover_image, type } = req.body;
       if (!title || !description || !file_link) {
         return next(new AppError('Judul, deskripsi, dan link file harus diisi', 400));
       }
@@ -60,7 +61,8 @@ class EducationController {
         title,
         description,
         file_link,
-        cover_image: cover_image || ''
+        cover_image: cover_image || '',
+        type: type || 'panduan'
       });
 
       if (!success) {

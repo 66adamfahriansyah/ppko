@@ -19,19 +19,19 @@ class EducationRepository {
   }
 
   async create(bookData) {
-    const { title, description, file_link, cover_image } = bookData;
+    const { title, description, file_link, cover_image, type } = bookData;
     const [result] = await this.pool.query(
-      'INSERT INTO education_books (title, description, file_link, cover_image) VALUES (?, ?, ?, ?)',
-      [title, description, file_link, cover_image || '']
+      'INSERT INTO education_books (title, description, file_link, cover_image, type) VALUES (?, ?, ?, ?, ?)',
+      [title, description, file_link, cover_image || '', type || 'panduan']
     );
     return { id: result.insertId, ...bookData };
   }
 
   async update(id, bookData) {
-    const { title, description, file_link, cover_image } = bookData;
+    const { title, description, file_link, cover_image, type } = bookData;
     const [result] = await this.pool.query(
-      'UPDATE education_books SET title = ?, description = ?, file_link = ?, cover_image = ? WHERE id = ?',
-      [title, description, file_link, cover_image || '', id]
+      'UPDATE education_books SET title = ?, description = ?, file_link = ?, cover_image = ?, type = ? WHERE id = ?',
+      [title, description, file_link, cover_image || '', type || 'panduan', id]
     );
     return result.affectedRows > 0;
   }

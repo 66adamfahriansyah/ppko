@@ -50,9 +50,11 @@ function Education() {
   // Form states (For Add / Edit)
   const [showModal, setShowModal] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
-  const [form, setForm] = useState({ title: '', description: '', file_link: '', cover_image: '' });
+  const [form, setForm] = useState({ title: '', description: '', file_link: '', cover_image: '', type: 'panduan' });
   const [searchQuery, setSearchQuery] = useState('');
   const [useApi, setUseApi] = useState(false);
+  const [coverError, setCoverError] = useState('');
+  const [coverFileName, setCoverFileName] = useState('');
 
   const triggerNotification = (msg) => {
     setSuccessMsg(msg);
@@ -82,7 +84,9 @@ function Education() {
   // Open add modal
   const openAddModal = () => {
     setEditingBook(null);
-    setForm({ title: '', description: '', file_link: '', cover_image: '' });
+    setForm({ title: '', description: '', file_link: '', cover_image: '', type: 'panduan' });
+    setCoverError('');
+    setCoverFileName('');
     setShowModal(true);
   };
 
@@ -93,8 +97,11 @@ function Education() {
       title: book.title,
       description: book.description,
       file_link: book.file_link,
-      cover_image: book.cover_image || ''
+      cover_image: book.cover_image || '',
+      type: book.type || 'panduan'
     });
+    setCoverError('');
+    setCoverFileName('');
     setShowModal(true);
   };
 
@@ -243,8 +250,10 @@ function Education() {
                         <span className="text-[10px] font-bold text-emerald-800 uppercase block tracking-widest">E-BIO TANI</span>
                       </div>
                     )}
-                    <span className="absolute top-3 left-3 bg-emerald-800 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                      Buku Panduan
+                    <span className={`absolute top-3 left-3 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                      book.type === 'materi' ? 'bg-blue-700' : 'bg-emerald-800'
+                    }`}>
+                      {book.type === 'materi' ? 'Materi' : 'Buku Panduan'}
                     </span>
                   </div>
 
@@ -296,6 +305,34 @@ function Education() {
           <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-xl border border-gray-100 overflow-y-auto max-h-[90vh]">
             <h3 className="font-extrabold text-base text-gray-800">{editingBook ? 'Edit Buku Panduan' : 'Tambah Buku Panduan'}</h3>
             <form onSubmit={handleSave} className="space-y-4">
+              {/* Tipe */}
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 block mb-1">Tipe Konten</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, type: 'panduan' })}
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
+                      form.type === 'panduan'
+                        ? 'bg-emerald-800 text-white border-emerald-800'
+                        : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-emerald-400'
+                    }`}
+                  >
+                    <i className="bi bi-book mr-1"></i> Panduan
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, type: 'materi' })}
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
+                      form.type === 'materi'
+                        ? 'bg-blue-700 text-white border-blue-700'
+                        : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-blue-400'
+                    }`}
+                  >
+                    <i className="bi bi-journal-text mr-1"></i> Materi
+                  </button>
+                </div>
+              </div>
               <div>
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Judul Buku / Materi</label>
                 <input
@@ -333,14 +370,16 @@ function Education() {
                 <label className="text-[10px] font-bold text-gray-400 block mb-1">Unggah Cover Buku (PNG/JPG/JPEG)</label>
                 <label className="w-full flex items-center justify-center gap-2 border border-dashed border-gray-300 hover:border-emerald-600 rounded-xl py-3 px-4 text-xs font-semibold text-gray-600 cursor-pointer bg-gray-50/50 hover:bg-white transition-all">
                   <i className="bi bi-image text-emerald-700"></i>
-                  <span>Pilih File Gambar</span>
+                  <span>{coverFileName ? coverFileName : 'Pilih File Gambar'}</span>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/png, image/jpg, image/jpeg"
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files[0];
+                      setCoverError('');
                       if (file) {
+                        setCoverFileName(file.name);
                         const reader = new FileReader();
                         reader.onloadend = () => setForm({ ...form, cover_image: reader.result });
                         reader.readAsDataURL(file);
@@ -348,9 +387,22 @@ function Education() {
                     }}
                   />
                 </label>
-                {form.cover_image && (
+                {coverError && (
+                  <p className="mt-1.5 text-[10px] font-semibold text-red-500 flex items-center gap-1">
+                    <i className="bi bi-exclamation-circle-fill"></i> {coverError}
+                  </p>
+                )}
+                <p className="mt-1 text-[10px] text-gray-400">Format: PNG, JPG, JPEG</p>
+                {form.cover_image && !coverError && (
                   <div className="mt-2 relative h-20 rounded-xl overflow-hidden border border-gray-100 max-w-xs">
                     <img src={form.cover_image} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => { setForm({ ...form, cover_image: '' }); setCoverFileName(''); }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-[10px] flex items-center justify-center hover:bg-red-600 cursor-pointer"
+                    >
+                      <i className="bi bi-x"></i>
+                    </button>
                   </div>
                 )}
               </div>
