@@ -2,6 +2,8 @@ import mqtt from 'mqtt';
 import pool from '../config/db.js';
 import MonitoringRepository from '../repositories/MonitoringRepository.js';
 import MonitoringService from '../services/MonitoringService.js';
+import { processFuzzy4Nodes } from '../utils/fuzzyLogic.js';
+
 const monitoringRepository = new MonitoringRepository(pool);
 const monitoringService = new MonitoringService(monitoringRepository);
 
@@ -135,17 +137,22 @@ export function initializeMqttService() {
             status: npkStatus
           };
 
-          // Simpan ke database
-          console.log('[MQTT] Menyimpan telemetry ke database...');
-          await monitoringService.updateSensors({ plts, rain, lightTrap, npk });
+          console.log(`[MQTT Telemetry Result]:`, {
+            rain: `Intensity ${rain.intensity}% (${rain.detection} - ${rain.status}) [Fuzzy 4 Node]`,
+            lightTrap: `Active: ${lightTrap.active} (Relays Active: ${fusedData.fuzzyDetails.relayActiveCount}/4, Score: ${fusedData.fuzzyDetails.relayFuzzyScore}) [Fuzzy 4 Node]`,
+            npk: `N:${npk.nitrogen} P:${npk.phosphor} K:${npk.potassium} (${npk.status}) [1 Node Direct]`
+          });
+
+          // Simpan data valid ke database (tanpa PLTS/baterai)
+          await monitoringService.updateSensors({ rain, lightTrap, npk });
+          console.log('[MQTT] Berhasil memperbarui database dengan data valid.');
+        } catch (error) {
+          console.error('[MQTT] Gagal memproses telemetry:', error.message);
         }
-      } catch (error) {
-        console.error('[MQTT] Gagal memproses telemetry:', error.message);
       }
-    }
   });
 
   client.on('error', (err) => {
-    console.error('MQTT Connection Error:', err.message);
+    console.error('[MQTT] Connection Error:', err.message);
   });
 }

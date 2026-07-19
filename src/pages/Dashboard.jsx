@@ -7,10 +7,6 @@ import DeviceMapCard from '../components/dashboard/DeviceMapCard';
 import ManualControlPanel from '../components/dashboard/ManualControlPanel';
 
 const defaultData = {
-  plts: {
-    current: 0.0,
-    battery: 0
-  },
   rain: {
     status: "-",
     detection: "-",
