@@ -70,14 +70,14 @@ export function initializeMqttService() {
           // b. Hujan (mendukung flat dan nested objek dari ESP32)
           const rainObj = aggregate.rain || {};
           const rainCondition = aggregate.rainCondition || rainObj.condition || aggregate.rain_condition || 'BELUM ADA DATA';
-          
+
           let mappedStatus = '-';
           if (rainCondition === 'HUJAN' || rainCondition === 'LEMBAP/GERIMIS' || rainCondition === 'Basah' || rainCondition === 'Rain') {
             mappedStatus = 'BASAH';
           } else if (rainCondition === 'TIDAK HUJAN' || rainCondition === 'Kering' || rainCondition === 'No Rain') {
             mappedStatus = 'KERING';
           }
-          
+
           let mappedDetection = '-';
           if (rainCondition === 'HUJAN' || rainCondition === 'LEMBAP/GERIMIS' || rainCondition === 'Basah' || rainCondition === 'Rain') {
             mappedDetection = 'HUJAN';
@@ -95,7 +95,7 @@ export function initializeMqttService() {
           // c. Light Trap (Relay status)
           const relayObj = aggregate.relay || {};
           const relayOnCount = aggregate.relayOnCount ?? relayObj.active_count ?? aggregate.relay_on_count ?? 0;
-          
+
           // Ambil status control terbaru dari db untuk triggerMode
           let triggerMode = 'Otomatis';
           try {
@@ -118,7 +118,7 @@ export function initializeMqttService() {
           const n = Math.round(aggregate.nitrogenMgKg ?? npkObj.n ?? aggregate.nitrogen ?? 0);
           const p = Math.round(aggregate.phosphorusMgKg ?? npkObj.p ?? aggregate.phosphorus ?? 0);
           const k = Math.round(aggregate.potassiumMgKg ?? npkObj.k ?? aggregate.potassium ?? 0);
-          
+
           let npkStatus = 'Normal';
           if (n === 0 && p === 0 && k === 0) {
             npkStatus = '-';
